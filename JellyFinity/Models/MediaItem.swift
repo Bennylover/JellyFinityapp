@@ -27,7 +27,9 @@ struct MediaItem: Identifiable, Hashable, Sendable {
     var hasWatchHistory = false
     var cast: [CastMember] = []
     var imdbId: String? = nil
-
+    var tmdbId: String? = nil
+    /// Where the cast list came from ("TMDB" or "IMDb"); nil means the Jellyfin server.
+    var castSource: String? = nil
     /// "S2 · E4" style label for episodes.
     var episodeLabel: String? {
         guard kind == .episode, let indexNumber else { return nil }

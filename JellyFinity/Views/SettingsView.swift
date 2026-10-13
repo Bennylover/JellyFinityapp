@@ -23,6 +23,7 @@ struct SettingsView: View {
                     }
                     .pickerStyle(.segmented)
                 }
+                TMDBKeySection()
                 accountSection
             }
             .scrollContentBackground(.hidden)

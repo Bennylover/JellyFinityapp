@@ -30,12 +30,13 @@ struct CastSection: View {
         HStack {
             Text("Cast").font(.title3.weight(.bold))
             Spacer()
-            if item.imdbId != nil {
-                Text("IMDb").font(.caption.weight(.heavy))
+            if let source = item.castSource {
+                Text(source).font(.caption.weight(.heavy))
                     .padding(.horizontal, 7).padding(.vertical, 3)
-                    .background(Color.yellow, in: RoundedRectangle(cornerRadius: 5, style: .continuous))
-                    .foregroundStyle(.black)
-                    .accessibilityHidden(true)
+                    .background(source == "IMDb" ? Color.yellow : Color.teal,
+                                in: RoundedRectangle(cornerRadius: 5, style: .continuous))
+                    .foregroundStyle(source == "IMDb" ? Color.black : Color.white)
+                    .accessibilityLabel("Source: \(source)")
             }
         }
     }
@@ -139,7 +140,7 @@ private struct FullCastSheet: View {
                             Label("Open on IMDb", systemImage: "arrow.up.right.square")
                         }
                     } footer: {
-                        Text("Cast from IMDb. Crew from your Jellyfin server's metadata.")
+                        Text("Credits from \(item.castSource ?? "your Jellyfin server").")
                     }
                 }
             }

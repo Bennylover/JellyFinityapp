@@ -38,6 +38,39 @@ struct LogoTitleView: View {
     }
 }
 
+/// Description text clamped to three lines; tap to read the rest.
+struct ExpandableText: View {
+    @Environment(\.appTheme) private var theme
+    let text: String
+    @State private var expanded = false
+
+    private var canExpand: Bool { text.count > 130 }
+
+    var body: some View {
+        Button {
+            withAnimation(.easeInOut(duration: 0.25)) { expanded.toggle() }
+        } label: {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(text)
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.leading)
+                    .lineLimit(expanded ? nil : 3)
+                if canExpand {
+                    Text(expanded ? "Show less" : "Read more")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(theme.accent)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .disabled(!canExpand)
+        .accessibilityHint(canExpand ? (expanded ? "Collapses the description" : "Shows the full description") : "")
+    }
+}
+
 private struct ScrollMinYKey: PreferenceKey {
     static let defaultValue: CGFloat = 0
     static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) { value = nextValue() }
@@ -65,7 +98,7 @@ struct MediaDetailView: View {
                 info
                 actions
                 if let overview = item.overview, !overview.isEmpty {
-                    Text(overview).font(.body).foregroundStyle(.secondary)
+                    ExpandableText(text: overview)
                 }
                 CastSection(item: item)
                 related
@@ -86,7 +119,7 @@ struct MediaDetailView: View {
         .fullScreenCover(item: $playingVideo) { VideoPlayerScreen(item: $0) }
         .task {
             item = await store.fetchDetail(item)
-            item = await store.enrichWithIMDb(item)
+            item = await store.enrichCast(item)
         }
     }
 

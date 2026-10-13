@@ -23,7 +23,7 @@ enum PlaybackStage: String, Sendable {
 extension JellyfinClient {
     // MARK: - Browsing
 
-    func library(userId: String, kind: LibraryKind, sort: LibrarySort, search: String,
+    func library(userId: String, kind: LibraryKind, sort: LibrarySort, search: String, genre: String? = nil,
                  startIndex: Int, limit: Int) async throws -> (items: [MediaItem], total: Int) {
         var query: [URLQueryItem] = [
             .init(name: "userId", value: userId), .init(name: "IncludeItemTypes", value: kind.includeTypes),
@@ -34,7 +34,19 @@ extension JellyfinClient {
         ]
         let trimmed = search.trimmingCharacters(in: .whitespacesAndNewlines)
         if !trimmed.isEmpty { query.append(.init(name: "SearchTerm", value: trimmed)) }
+        if let genre, !genre.isEmpty { query.append(.init(name: "Genres", value: genre)) }
         return try await page(path: "Items", query: query)
+    }
+
+    /// Genre names available in a library, for the genre filter.
+    func genres(userId: String, kind: LibraryKind) async throws -> [String] {
+        let path = kind == .albums ? "MusicGenres" : "Genres"
+        let data = try await send(path, query: [
+            .init(name: "userId", value: userId), .init(name: "IncludeItemTypes", value: kind.includeTypes),
+            .init(name: "Recursive", value: "true"), .init(name: "SortBy", value: "SortName")
+        ])
+        let response = try decode(ItemsResponse.self, from: data)
+        return response.items.compactMap(\.name).filter { !$0.isEmpty }
     }
 
     func detail(userId: String, itemId: String) async throws -> MediaItem {

@@ -15,14 +15,22 @@ extension SessionStore {
         return (client, userId)
     }
 
-    func fetchLibrary(kind: LibraryKind, sort: LibrarySort, search: String,
+    func fetchLibrary(kind: LibraryKind, sort: LibrarySort, search: String, genre: String? = nil,
                       startIndex: Int, limit: Int) async throws -> (items: [MediaItem], total: Int) {
         if isDemo {
-            return Self.demoLibrary(kind: kind, sort: sort, search: search, startIndex: startIndex)
+            return Self.demoLibrary(kind: kind, sort: sort, search: search, genre: genre, startIndex: startIndex)
         }
         let (client, userId) = try requireClient()
-        return try await client.library(userId: userId, kind: kind, sort: sort, search: search,
+        return try await client.library(userId: userId, kind: kind, sort: sort, search: search, genre: genre,
                                         startIndex: startIndex, limit: limit)
+    }
+
+    func fetchGenres(kind: LibraryKind) async -> [String] {
+        if isDemo {
+            return Array(Set(SampleData.items(for: kind).flatMap(\.genres))).sorted()
+        }
+        guard let (client, userId) = try? requireClient() else { return [] }
+        return (try? await client.genres(userId: userId, kind: kind)) ?? []
     }
 
     /// Loads the full record (overview, genres, logo) for an item shown in a detail page.
@@ -40,17 +48,24 @@ extension SessionStore {
         return full
     }
 
-    /// Replaces the cast with IMDb's list (looked up by IMDb ID, or by title + year when the server has none).
-    /// Directors, writers and other crew from Jellyfin are kept. Returns the item unchanged if IMDb has nothing.
-    func enrichWithIMDb(_ item: MediaItem) async -> MediaItem {
+    /// Upgrades the cast list: The Movie Database first (needs the user's own key), then IMDb,
+    /// and finally whatever the Jellyfin server already provided.
+    func enrichCast(_ item: MediaItem) async -> MediaItem {
         guard !isDemo, item.kind == .movie || item.kind == .series || item.kind == .episode else { return item }
-        let result = await IMDbClient.lookup(name: item.name, year: item.year, knownId: item.imdbId,
-                                             allowSearch: item.kind != .episode)
-        guard let result else { return item }
         var updated = item
-        updated.imdbId = result.imdbId
-        if !result.actors.isEmpty {
-            updated.cast = result.actors + item.cast.filter { $0.role != .actor }
+        if let tmdb = await TMDBClient.lookup(item: item) {
+            updated.tmdbId = tmdb.tmdbId
+            updated.cast = tmdb.members
+            updated.castSource = "TMDB"
+            return updated
+        }
+        let imdb = await IMDbClient.lookup(name: item.name, year: item.year, knownId: item.imdbId,
+                                           allowSearch: item.kind != .episode)
+        guard let imdb else { return item }
+        updated.imdbId = imdb.imdbId
+        if !imdb.actors.isEmpty {
+            updated.cast = imdb.actors + item.cast.filter { $0.role != .actor }
+            updated.castSource = "IMDb"
         }
         return updated
     }
@@ -91,10 +106,13 @@ extension SessionStore {
         return try await client.tracks(userId: userId, albumId: album.id)
     }
 
-    private static func demoLibrary(kind: LibraryKind, sort: LibrarySort, search: String,
+    private static func demoLibrary(kind: LibraryKind, sort: LibrarySort, search: String, genre: String?,
                                     startIndex: Int) -> (items: [MediaItem], total: Int) {
         guard startIndex == 0 else { return ([], SampleData.items(for: kind).count) }
         var items = SampleData.items(for: kind)
+        if let genre, !genre.isEmpty {
+            items = items.filter { $0.genres.contains(genre) }
+        }
         let term = search.trimmingCharacters(in: .whitespacesAndNewlines)
         if !term.isEmpty {
             items = items.filter { $0.name.localizedCaseInsensitiveContains(term) }

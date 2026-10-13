@@ -13,13 +13,13 @@ final class LibraryModel {
     @ObservationIgnored private var generation = 0
     private let pageSize = 60
 
-    func reload(kind: LibraryKind, sort: LibrarySort, search: String, store: SessionStore) async {
+    func reload(kind: LibraryKind, sort: LibrarySort, search: String, genre: String?, store: SessionStore) async {
         generation += 1
         let current = generation
         isLoading = true
         errorMessage = nil
         do {
-            let result = try await store.fetchLibrary(kind: kind, sort: sort, search: search,
+            let result = try await store.fetchLibrary(kind: kind, sort: sort, search: search, genre: genre,
                                                       startIndex: 0, limit: pageSize)
             guard current == generation else { return }
             items = result.items
@@ -35,12 +35,12 @@ final class LibraryModel {
     }
 
     func loadMoreIfNeeded(after item: MediaItem, kind: LibraryKind, sort: LibrarySort,
-                          search: String, store: SessionStore) async {
+                          search: String, genre: String?, store: SessionStore) async {
         guard item.id == items.last?.id, items.count < total, !isLoading else { return }
         let current = generation
         isLoading = true
         defer { isLoading = false }
-        guard let result = try? await store.fetchLibrary(kind: kind, sort: sort, search: search,
+        guard let result = try? await store.fetchLibrary(kind: kind, sort: sort, search: search, genre: genre,
                                                          startIndex: items.count, limit: pageSize),
               current == generation else { return }
         items.append(contentsOf: result.items)
@@ -58,7 +58,14 @@ struct LibraryView: View {
     @State private var sort: LibrarySort = .recentlyAdded
     @State private var lastWatched: MediaItem?
     @State private var playing: MediaItem?
+    @State private var genres: [String] = []
+    @State private var selectedGenre: String?
 
+    private var matchingGenres: [String] {
+        let term = search.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !term.isEmpty else { return [] }
+        return genres.filter { $0.localizedCaseInsensitiveContains(term) }.prefix(6).map { $0 }
+    }
     private var columns: [GridItem] {
         [GridItem(.adaptive(minimum: kind.isSquare ? 150 : 108, maximum: 200), spacing: 14, alignment: .top)]
     }
@@ -68,6 +75,7 @@ struct LibraryView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     hero
+                    GenreChipRow(genres: genres, selected: $selectedGenre)
                     content
                 }
                 .padding(.horizontal)
@@ -75,7 +83,17 @@ struct LibraryView: View {
             }
             .background(theme.background.ignoresSafeArea())
             .navigationTitle(kind.title)
-            .searchable(text: $search, prompt: "Search \(kind.title.lowercased())")
+            .searchable(text: $search, prompt: "Search \(kind.title.lowercased()) or genres")
+            .searchSuggestions {
+                ForEach(matchingGenres, id: \.self) { genre in
+                    Button {
+                        selectedGenre = genre
+                        search = ""
+                    } label: {
+                        Label(genre, systemImage: "tag")
+                    }
+                }
+            }
             .toolbar { sortMenu }
             .navigationDestination(for: MediaItem.self) { MediaDetailView(item: $0) }
             .fullScreenCover(item: $playing) { VideoPlayerScreen(item: $0) }
@@ -84,10 +102,11 @@ struct LibraryView: View {
                 await reload()
             }
             .task { await loadHero() }
+            .task { genres = await store.fetchGenres(kind: kind) }
             .onChange(of: playing?.id) { _, newValue in
                 if newValue == nil { Task { await loadHero() } }
             }
-            .task(id: "\(search)|\(sort.rawValue)") {
+            .task(id: "\(search)|\(sort.rawValue)|\(selectedGenre ?? "")") {
                 if !search.isEmpty { try? await Task.sleep(for: .milliseconds(350)) }
                 guard !Task.isCancelled else { return }
                 await reload()
@@ -98,7 +117,7 @@ struct LibraryView: View {
 
     @ViewBuilder
     private var hero: some View {
-        if search.isEmpty, let lastWatched {
+        if search.isEmpty, selectedGenre == nil, let lastWatched {
             RecentHeroHeader(item: lastWatched) { playing = lastWatched }
                 .transition(.opacity)
         }
@@ -114,7 +133,8 @@ struct LibraryView: View {
         if !model.hasLoaded && model.items.isEmpty {
             ProgressView().frame(maxWidth: .infinity).padding(.top, 100)
         } else if model.items.isEmpty {
-            LibraryEmptyView(kind: kind, isSearching: !search.isEmpty, error: model.errorMessage)
+            LibraryEmptyView(kind: kind, isSearching: !search.isEmpty || selectedGenre != nil,
+                             error: model.errorMessage)
         } else {
             VStack(alignment: .leading, spacing: 12) {
                 Text("\(model.total) \(model.total == 1 ? "title" : "titles") · \(sort.label)")
@@ -145,11 +165,48 @@ struct LibraryView: View {
     }
 
     private func reload() async {
-        await model.reload(kind: kind, sort: sort, search: search, store: store)
+        await model.reload(kind: kind, sort: sort, search: search, genre: selectedGenre, store: store)
     }
 
     private func loadMore(after item: MediaItem) async {
-        await model.loadMoreIfNeeded(after: item, kind: kind, sort: sort, search: search, store: store)
+        await model.loadMoreIfNeeded(after: item, kind: kind, sort: sort, search: search,
+                                     genre: selectedGenre, store: store)
+    }
+}
+
+/// Horizontally scrolling genre filter; tap a genre to filter, tap again to clear.
+private struct GenreChipRow: View {
+    @Environment(\.appTheme) private var theme
+    let genres: [String]
+    @Binding var selected: String?
+
+    var body: some View {
+        if !genres.isEmpty {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(genres, id: \.self) { genre in
+                        chip(genre)
+                    }
+                }
+            }
+            .scrollClipDisabled()
+        }
+    }
+
+    private func chip(_ genre: String) -> some View {
+        let isOn = selected == genre
+        return Button {
+            withAnimation(.easeOut(duration: 0.2)) { selected = isOn ? nil : genre }
+        } label: {
+            Text(genre)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(isOn ? Color.white : theme.accent)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 7)
+                .background(isOn ? AnyShapeStyle(theme.accent) : AnyShapeStyle(theme.accent.opacity(0.12)), in: Capsule())
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(isOn ? .isSelected : [])
     }
 }
 

@@ -152,7 +152,8 @@ struct JellyfinClient: Sendable {
             resumeSeconds: (position ?? 0) > 0 ? position : nil,
             hasWatchHistory: dto.userData?.lastPlayedDate != nil,
             cast: castMembers(from: dto),
-            imdbId: (dto.providerIds?["Imdb"] ?? nil).flatMap { $0.hasPrefix("tt") ? $0 : nil }
+            imdbId: (dto.providerIds?["Imdb"] ?? nil).flatMap { $0.hasPrefix("tt") ? $0 : nil },
+            tmdbId: (dto.providerIds?["Tmdb"] ?? nil).flatMap { Int($0) != nil ? $0 : nil }
         )
     }
 

@@ -49,6 +49,7 @@ targets:
           NSAllowsLocalNetworking: true
         NSLocalNetworkUsageDescription: Jellyfin Lite connects to the Jellyfin server on your local network to stream your media.
         UIApplicationSupportsIndirectInputEvents: true
+        UIBackgroundModes: [audio]
         UILaunchStoryboardName: LaunchScreen
         UIRequiredDeviceCapabilities: [arm64]
         UISupportedInterfaceOrientations:

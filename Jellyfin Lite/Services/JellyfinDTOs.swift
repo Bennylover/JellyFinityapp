@@ -27,13 +27,21 @@ struct AuthResult: Decodable, Sendable {
 
 struct ItemsResponse: Decodable, Sendable {
     let items: [ItemDTO]
-    enum CodingKeys: String, CodingKey { case items = "Items" }
+    let totalRecordCount: Int?
+    enum CodingKeys: String, CodingKey {
+        case items = "Items"
+        case totalRecordCount = "TotalRecordCount"
+    }
 }
 
 struct ItemDTO: Decodable, Sendable {
     struct UserData: Decodable, Sendable {
         let playedPercentage: Double?
-        enum CodingKeys: String, CodingKey { case playedPercentage = "PlayedPercentage" }
+        let playbackPositionTicks: Int64?
+        enum CodingKeys: String, CodingKey {
+            case playedPercentage = "PlayedPercentage"
+            case playbackPositionTicks = "PlaybackPositionTicks"
+        }
     }
 
     let id: String
@@ -51,6 +59,13 @@ struct ItemDTO: Decodable, Sendable {
     let imageTags: [String: String]?
     let backdropImageTags: [String]?
     let parentBackdropItemId: String?
+    let parentLogoItemId: String?
+    let seriesId: String?
+    let indexNumber: Int?
+    let parentIndexNumber: Int?
+    let albumId: String?
+    let albumPrimaryImageTag: String?
+    let artists: [String]?
 
     enum CodingKeys: String, CodingKey {
         case id = "Id", name = "Name", type = "Type", productionYear = "ProductionYear"
@@ -59,6 +74,9 @@ struct ItemDTO: Decodable, Sendable {
         case userData = "UserData", albumArtist = "AlbumArtist", seriesName = "SeriesName"
         case imageTags = "ImageTags", backdropImageTags = "BackdropImageTags"
         case parentBackdropItemId = "ParentBackdropItemId"
+        case parentLogoItemId = "ParentLogoItemId", seriesId = "SeriesId"
+        case indexNumber = "IndexNumber", parentIndexNumber = "ParentIndexNumber"
+        case albumId = "AlbumId", albumPrimaryImageTag = "AlbumPrimaryImageTag", artists = "Artists"
     }
 }
 

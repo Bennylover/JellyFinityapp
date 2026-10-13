@@ -3,6 +3,7 @@ import SwiftUI
 @main
 struct JellyfinLiteApp: App {
     @State private var session = SessionStore()
+    @State private var audio = AudioPlayer()
     @AppStorage("jl.theme") private var themeRaw = AppTheme.aurora.rawValue
     @AppStorage("jl.appearance") private var appearanceRaw = AppearanceMode.system.rawValue
 
@@ -13,6 +14,7 @@ struct JellyfinLiteApp: App {
         WindowGroup {
             RootView()
                 .environment(session)
+                .environment(audio)
                 .environment(\.appTheme, theme)
                 .tint(theme.accent)
                 .preferredColorScheme(appearance.colorScheme)
@@ -38,18 +40,29 @@ struct RootView: View {
 }
 
 struct MainTabView: View {
+    @Environment(AudioPlayer.self) private var audio
+
     var body: some View {
         TabView {
             HomeView()
                 .tabItem { Label("Home", systemImage: "house.fill") }
-            MoviesView()
+            LibraryView(kind: .movies)
                 .tabItem { Label("Movies", systemImage: "film.stack") }
-            MusicView()
+            LibraryView(kind: .shows)
+                .tabItem { Label("Shows", systemImage: "tv") }
+            LibraryView(kind: .albums)
                 .tabItem { Label("Music", systemImage: "music.note") }
-            AudiobooksView()
+            LibraryView(kind: .audiobooks)
                 .tabItem { Label("Books", systemImage: "headphones") }
-            SettingsView()
-                .tabItem { Label("Settings", systemImage: "paintpalette") }
         }
+        .alert("Can't play that", isPresented: errorBinding) {
+            Button("OK", role: .cancel) { audio.errorMessage = nil }
+        } message: {
+            Text(audio.errorMessage ?? "")
+        }
+    }
+
+    private var errorBinding: Binding<Bool> {
+        Binding(get: { audio.errorMessage != nil }, set: { if !$0 { audio.errorMessage = nil } })
     }
 }

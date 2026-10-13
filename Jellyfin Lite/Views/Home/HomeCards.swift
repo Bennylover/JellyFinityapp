@@ -25,9 +25,7 @@ struct FeaturedHeroCard: View {
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
                 .background(.white.opacity(0.2), in: Capsule())
-            Text(item.name)
-                .font(.system(size: 34, weight: .heavy, design: .rounded))
-                .lineLimit(2)
+            LogoTitleView(item: item, alignment: .leading, maxHeight: 80)
             metaRow
             HStack(spacing: 10) {
                 Label("Play", systemImage: "play.fill")
@@ -228,14 +226,17 @@ struct AlbumRow: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(alignment: .top, spacing: 14) {
                     ForEach(items) { item in
-                        VStack(alignment: .leading, spacing: 6) {
-                            ArtworkView(url: item.primaryImageURL, seed: item.artworkSeed, symbol: item.symbol)
-                                .frame(width: 150, height: 150)
-                                .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-                            Text(item.name).font(.subheadline.weight(.semibold)).lineLimit(1)
-                            Text(item.subtitle ?? "Unknown Artist").font(.caption).foregroundStyle(.secondary).lineLimit(1)
+                        NavigationLink(value: item) {
+                            VStack(alignment: .leading, spacing: 6) {
+                                ArtworkView(url: item.primaryImageURL, seed: item.artworkSeed, symbol: item.symbol)
+                                    .frame(width: 150, height: 150)
+                                    .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                                Text(item.name).font(.subheadline.weight(.semibold)).lineLimit(1)
+                                Text(item.subtitle ?? "Unknown Artist").font(.caption).foregroundStyle(.secondary).lineLimit(1)
+                            }
+                            .frame(width: 150, alignment: .leading)
                         }
-                        .frame(width: 150, alignment: .leading)
+                        .buttonStyle(.plain)
                     }
                 }
                 .padding(.horizontal)

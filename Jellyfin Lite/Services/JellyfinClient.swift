@@ -82,35 +82,59 @@ struct JellyfinClient: Sendable {
 
     // MARK: - Helpers
 
-    private func items(query: [URLQueryItem]) async throws -> [MediaItem] {
-        let data = try await send("Items", query: query)
-        return try decode(ItemsResponse.self, from: data).items.map(map)
+    func items(query: [URLQueryItem]) async throws -> [MediaItem] {
+        try await page(path: "Items", query: query).items
     }
 
-    private func imageURL(_ itemId: String, type: String, maxWidth: Int) -> URL? {
+    func page(path: String, query: [URLQueryItem]) async throws -> (items: [MediaItem], total: Int) {
+        let data = try await send(path, query: query)
+        let response = try decode(ItemsResponse.self, from: data)
+        let mapped = response.items.map(map)
+        return (mapped, response.totalRecordCount ?? mapped.count)
+    }
+
+    func imageURL(_ itemId: String, type: String, maxWidth: Int) -> URL? {
         var comps = URLComponents(url: baseURL.appendingPathComponent("Items/\(itemId)/Images/\(type)"),
                                   resolvingAgainstBaseURL: false)
         comps?.queryItems = [.init(name: "maxWidth", value: String(maxWidth)), .init(name: "quality", value: "90")]
         return comps?.url
     }
 
-    private func map(_ dto: ItemDTO) -> MediaItem {
+    func map(_ dto: ItemDTO) -> MediaItem {
         let kind: MediaItem.Kind = switch dto.type {
         case "Movie": .movie
         case "Episode": .episode
         case "Series": .series
+        case "Season": .season
         case "MusicAlbum": .album
+        case "Audio": .track
         case "AudioBook": .audiobook
         default: .other
         }
-        let hasPrimary = dto.imageTags?["Primary"] != nil
+        var primary: URL?
+        if dto.imageTags?["Primary"] != nil {
+            primary = imageURL(dto.id, type: "Primary", maxWidth: 600)
+        } else if let albumId = dto.albumId, dto.albumPrimaryImageTag != nil {
+            primary = imageURL(albumId, type: "Primary", maxWidth: 600)
+        }
+        var logo: URL?
+        if dto.imageTags?["Logo"] != nil {
+            logo = imageURL(dto.id, type: "Logo", maxWidth: 700)
+        } else if let parent = dto.parentLogoItemId {
+            logo = imageURL(parent, type: "Logo", maxWidth: 700)
+        }
         var backdrop: URL?
         if let tags = dto.backdropImageTags, !tags.isEmpty {
             backdrop = imageURL(dto.id, type: "Backdrop", maxWidth: 1200)
         } else if let parent = dto.parentBackdropItemId {
             backdrop = imageURL(parent, type: "Backdrop", maxWidth: 1200)
         }
-        let subtitle = kind == .episode ? dto.seriesName : dto.albumArtist
+        let subtitle: String? = switch kind {
+        case .episode: dto.seriesName
+        case .track: dto.artists?.first ?? dto.albumArtist
+        default: dto.albumArtist
+        }
+        let position = dto.userData?.playbackPositionTicks.map { Double($0) / 10_000_000 }
         return MediaItem(
             id: dto.id, name: dto.name ?? "Untitled", subtitle: subtitle, kind: kind,
             year: dto.productionYear,
@@ -118,8 +142,14 @@ struct JellyfinClient: Sendable {
             communityRating: dto.communityRating, officialRating: dto.officialRating,
             genres: dto.genres ?? [], overview: dto.overview,
             progress: dto.userData?.playedPercentage.map { $0 / 100 },
-            primaryImageURL: hasPrimary ? imageURL(dto.id, type: "Primary", maxWidth: 600) : nil,
-            backdropImageURL: backdrop
+            primaryImageURL: primary,
+            backdropImageURL: backdrop,
+            logoImageURL: logo,
+            seriesId: dto.seriesId,
+            indexNumber: dto.indexNumber,
+            parentIndexNumber: dto.parentIndexNumber,
+            durationSeconds: dto.runTimeTicks.map { Double($0) / 10_000_000 },
+            resumeSeconds: (position ?? 0) > 0 ? position : nil
         )
     }
 
@@ -129,7 +159,7 @@ struct JellyfinClient: Sendable {
         return header
     }
 
-    private func send(_ path: String, query: [URLQueryItem] = [], method: String = "GET", body: Data? = nil) async throws -> Data {
+    func send(_ path: String, query: [URLQueryItem] = [], method: String = "GET", body: Data? = nil) async throws -> Data {
         guard var comps = URLComponents(url: baseURL.appendingPathComponent(path), resolvingAgainstBaseURL: false) else {
             throw ClientError.invalidAddress
         }
@@ -160,7 +190,7 @@ struct JellyfinClient: Sendable {
         }
     }
 
-    private func decode<T: Decodable>(_ type: T.Type, from data: Data) throws -> T {
+    func decode<T: Decodable>(_ type: T.Type, from data: Data) throws -> T {
         do { return try JSONDecoder().decode(type, from: data) } catch { throw ClientError.decoding }
     }
 }

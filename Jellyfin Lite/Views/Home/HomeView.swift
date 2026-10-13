@@ -3,13 +3,14 @@ import SwiftUI
 struct HomeView: View {
     @Environment(SessionStore.self) private var session
     @Environment(\.appTheme) private var theme
+    @State private var showSettings = false
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 28) {
                     HomeHeader(name: session.displayName, server: session.serverName,
-                               isDemo: session.phase == .demo)
+                               isDemo: session.phase == .demo) { showSettings = true }
                     if let error = session.loadError {
                         ErrorBanner(message: error)
                     }
@@ -26,6 +27,8 @@ struct HomeView: View {
                 if session.snapshot.isEmpty { await session.refresh() }
             }
         }
+        .miniPlayerInset()
+        .sheet(isPresented: $showSettings) { SettingsView() }
     }
 
     @ViewBuilder
@@ -69,6 +72,7 @@ private struct HomeHeader: View {
     let name: String
     let server: String
     let isDemo: Bool
+    let onProfile: () -> Void
 
     private var greeting: String {
         let hour = Calendar.current.component(.hour, from: .now)
@@ -93,14 +97,18 @@ private struct HomeHeader: View {
                     .lineLimit(2)
             }
             Spacer()
-            Circle()
-                .fill(theme.gradient)
-                .frame(width: 48, height: 48)
-                .overlay {
-                    Text(String(name.prefix(1)).uppercased())
-                        .font(.title3.weight(.bold))
-                        .foregroundStyle(.white)
-                }
+            Button(action: onProfile) {
+                Circle()
+                    .fill(theme.gradient)
+                    .frame(width: 48, height: 48)
+                    .overlay {
+                        Text(String(name.prefix(1)).uppercased())
+                            .font(.title3.weight(.bold))
+                            .foregroundStyle(.white)
+                    }
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Settings and account")
         }
         .padding(.horizontal)
     }

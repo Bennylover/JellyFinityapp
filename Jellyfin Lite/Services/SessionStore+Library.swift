@@ -1,0 +1,72 @@
+import Foundation
+
+extension SessionStore {
+    /// An authenticated client for the connected server, or nil in demo / signed-out mode.
+    var client: JellyfinClient? {
+        guard phase == .connected, let session,
+              let token = KeychainStore.read(account: session.keychainAccount) else { return nil }
+        return JellyfinClient(baseURL: session.serverURL, token: token, deviceId: deviceId)
+    }
+
+    var isDemo: Bool { phase == .demo }
+
+    private func requireClient() throws -> (JellyfinClient, String) {
+        guard let client, let userId = session?.userId else { throw JellyfinClient.ClientError.unreachable }
+        return (client, userId)
+    }
+
+    func fetchLibrary(kind: LibraryKind, sort: LibrarySort, search: String,
+                      startIndex: Int, limit: Int) async throws -> (items: [MediaItem], total: Int) {
+        if isDemo {
+            return Self.demoLibrary(kind: kind, sort: sort, search: search, startIndex: startIndex)
+        }
+        let (client, userId) = try requireClient()
+        return try await client.library(userId: userId, kind: kind, sort: sort, search: search,
+                                        startIndex: startIndex, limit: limit)
+    }
+
+    /// Loads the full record (overview, genres, logo) for an item shown in a detail page.
+    func fetchDetail(_ item: MediaItem) async -> MediaItem {
+        guard let (client, userId) = try? requireClient() else { return item }
+        guard var full = try? await client.detail(userId: userId, itemId: item.id) else { return item }
+        if full.primaryImageURL == nil { full.primaryImageURL = item.primaryImageURL }
+        if full.backdropImageURL == nil { full.backdropImageURL = item.backdropImageURL }
+        if full.logoImageURL == nil { full.logoImageURL = item.logoImageURL }
+        return full
+    }
+
+    func fetchSeasons(of series: MediaItem) async throws -> [MediaItem] {
+        if isDemo { return SampleData.seasons(of: series) }
+        let (client, userId) = try requireClient()
+        return try await client.seasons(userId: userId, seriesId: series.id)
+    }
+
+    func fetchEpisodes(of season: MediaItem, seriesId: String) async throws -> [MediaItem] {
+        if isDemo { return SampleData.episodes(of: season) }
+        let (client, userId) = try requireClient()
+        return try await client.episodes(userId: userId, seriesId: seriesId, seasonId: season.id)
+    }
+
+    func fetchTracks(of album: MediaItem) async throws -> [MediaItem] {
+        if isDemo { return SampleData.tracks(of: album) }
+        let (client, userId) = try requireClient()
+        return try await client.tracks(userId: userId, albumId: album.id)
+    }
+
+    private static func demoLibrary(kind: LibraryKind, sort: LibrarySort, search: String,
+                                    startIndex: Int) -> (items: [MediaItem], total: Int) {
+        guard startIndex == 0 else { return ([], SampleData.items(for: kind).count) }
+        var items = SampleData.items(for: kind)
+        let term = search.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !term.isEmpty {
+            items = items.filter { $0.name.localizedCaseInsensitiveContains(term) }
+        }
+        switch sort {
+        case .recentlyAdded: break
+        case .title: items.sort { $0.name.localizedCompare($1.name) == .orderedAscending }
+        case .year: items.sort { ($0.year ?? 0) > ($1.year ?? 0) }
+        case .rating: items.sort { ($0.communityRating ?? 0) > ($1.communityRating ?? 0) }
+        }
+        return (items, items.count)
+    }
+}

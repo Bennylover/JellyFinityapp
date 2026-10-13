@@ -3,6 +3,7 @@ import SwiftUI
 struct SettingsView: View {
     @Environment(SessionStore.self) private var session
     @Environment(\.appTheme) private var theme
+    @Environment(\.dismiss) private var dismiss
     @AppStorage("jl.theme") private var themeRaw = AppTheme.aurora.rawValue
     @AppStorage("jl.appearance") private var appearanceRaw = AppearanceMode.system.rawValue
 
@@ -27,6 +28,11 @@ struct SettingsView: View {
             .scrollContentBackground(.hidden)
             .background(theme.background.ignoresSafeArea())
             .navigationTitle("Settings")
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { dismiss() }
+                }
+            }
         }
     }
 

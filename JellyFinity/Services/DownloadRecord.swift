@@ -21,6 +21,13 @@ enum DownloadStorage {
     }
 }
 
+/// An artist's pictures saved on this device for offline album pages.
+struct OfflineArtist: Codable, Hashable, Sendable {
+    var name: String
+    var imageFileName: String?
+    var backdropFileName: String?
+}
+
 /// A finished download, persisted so it survives relaunches and plays offline.
 struct DownloadRecord: Codable, Identifiable, Hashable, Sendable {
     let id: String
@@ -41,21 +48,47 @@ struct DownloadRecord: Codable, Identifiable, Hashable, Sendable {
     var bytes: Int64
     var resumeSeconds: Double?
     var addedAt: Date
+    /// Full server details (genres, cast, ratings…) saved at download time so the page works offline.
+    var metadata: MediaItem?
+    /// The album or show this item belongs to, saved the same way.
+    var groupItem: MediaItem?
+    var groupArtworkFileName: String?
+    var backdropFileName: String?
+    var logoFileName: String?
 
     var library: LibraryKind { LibraryKind(rawValue: libraryRaw) ?? .movies }
     var fileURL: URL { DownloadStorage.directory.appendingPathComponent(fileName) }
     var artworkURL: URL? { artworkFileName.map { DownloadStorage.directory.appendingPathComponent($0) } }
+    var groupArtworkURL: URL? { groupArtworkFileName.map { DownloadStorage.directory.appendingPathComponent($0) } }
+
+    /// Every file in the downloads folder this record owns (media plus pictures).
+    var allFileNames: [String] {
+        [fileName, artworkFileName, groupArtworkFileName, backdropFileName, logoFileName].compactMap { $0 }
+    }
 
     /// A playable item that points at the local file.
     var mediaItem: MediaItem {
-        let kind = MediaItem.Kind(rawValue: kindRaw) ?? .movie
-        var progress: Double?
-        if let resumeSeconds, let durationSeconds, durationSeconds > 0 { progress = resumeSeconds / durationSeconds }
-        return MediaItem(
-            id: id, name: name, subtitle: subtitle, kind: kind, year: year, runtimeMinutes: runtimeMinutes,
-            overview: overview, progress: progress, primaryImageURL: artworkURL, seriesId: groupId,
-            indexNumber: indexNumber, parentIndexNumber: parentIndexNumber, durationSeconds: durationSeconds,
-            resumeSeconds: resumeSeconds, localFileURL: fileURL
+        var item = metadata ?? basicItem
+        if let resumeSeconds, let durationSeconds, durationSeconds > 0 {
+            item.progress = resumeSeconds / durationSeconds
+        } else {
+            item.progress = nil
+        }
+        item.resumeSeconds = resumeSeconds
+        item.localFileURL = fileURL
+        if let artworkURL { item.primaryImageURL = artworkURL }
+        if let backdropFileName { item.backdropImageURL = DownloadStorage.directory.appendingPathComponent(backdropFileName) }
+        if let logoFileName { item.logoImageURL = DownloadStorage.directory.appendingPathComponent(logoFileName) }
+        if item.durationSeconds == nil { item.durationSeconds = durationSeconds }
+        return item
+    }
+
+    private var basicItem: MediaItem {
+        MediaItem(
+            id: id, name: name, subtitle: subtitle, kind: MediaItem.Kind(rawValue: kindRaw) ?? .movie,
+            year: year, runtimeMinutes: runtimeMinutes, overview: overview,
+            primaryImageURL: artworkURL, seriesId: groupId, indexNumber: indexNumber,
+            parentIndexNumber: parentIndexNumber, durationSeconds: durationSeconds
         )
     }
 

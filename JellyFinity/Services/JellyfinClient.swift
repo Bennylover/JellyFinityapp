@@ -4,6 +4,8 @@ struct JellyfinClient: Sendable {
     let baseURL: URL
     var token: String?
     let deviceId: String
+    /// Seconds to wait for the server before giving up (kept short so offline mode kicks in quickly).
+    var timeout: TimeInterval = 8
 
     enum ClientError: LocalizedError {
         case invalidAddress, unreachable, unauthorized, server(Int), decoding
@@ -186,7 +188,7 @@ struct JellyfinClient: Sendable {
         if !query.isEmpty { comps.queryItems = query }
         guard let url = comps.url else { throw ClientError.invalidAddress }
 
-        var request = URLRequest(url: url, timeoutInterval: 12)
+        var request = URLRequest(url: url, timeoutInterval: timeout)
         request.httpMethod = method
         request.setValue(authorizationHeader, forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Accept")

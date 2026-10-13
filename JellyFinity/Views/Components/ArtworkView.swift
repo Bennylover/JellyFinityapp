@@ -25,7 +25,7 @@ struct ArtworkView: View {
             }
             .overlay {
                 if let url {
-                    AsyncImage(url: url, transaction: Transaction(animation: .easeOut(duration: 0.25))) { phase in
+                    CachedImage(url: url) { phase in
                         if let image = phase.image {
                             image.resizable().scaledToFill()
                         }

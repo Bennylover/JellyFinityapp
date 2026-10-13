@@ -1,8 +1,16 @@
 import Foundation
 
-struct MediaItem: Identifiable, Hashable, Sendable {
-    enum Kind: String, Sendable {
+struct MediaItem: Identifiable, Hashable, Sendable, Codable {
+    enum Kind: String, Sendable, Codable {
         case movie, episode, series, season, album, track, audiobook, other
+    }
+
+    /// `localFileURL` is deliberately not stored: app container paths change between installs.
+    enum CodingKeys: String, CodingKey {
+        case id, name, subtitle, kind, year, runtimeMinutes, communityRating, officialRating, genres
+        case overview, progress, primaryImageURL, backdropImageURL, logoImageURL, seriesId, indexNumber
+        case parentIndexNumber, durationSeconds, resumeSeconds, hasWatchHistory, cast, imdbId, tmdbId
+        case castSource
     }
 
     let id: String
@@ -154,7 +162,7 @@ enum LibrarySort: String, CaseIterable, Identifiable, Sendable {
     var ascending: Bool { self == .title }
 }
 
-struct LibraryCounts: Sendable, Equatable {
+struct LibraryCounts: Sendable, Equatable, Codable {
     var movies = 0
     var series = 0
     var albums = 0
@@ -163,7 +171,7 @@ struct LibraryCounts: Sendable, Equatable {
     var total: Int { movies + series + albums + audiobooks }
 }
 
-struct LibrarySnapshot: Sendable {
+struct LibrarySnapshot: Sendable, Codable {
     var featured: MediaItem?
     var continueWatching: [MediaItem] = []
     var recentMovies: [MediaItem] = []

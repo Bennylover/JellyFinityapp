@@ -1,7 +1,7 @@
 import Foundation
 
 /// An artist found by searching the Music library.
-struct ArtistHit: Identifiable, Hashable, Sendable {
+struct ArtistHit: Identifiable, Hashable, Sendable, Codable {
     let id: String
     let name: String
     let imageURL: URL?

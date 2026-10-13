@@ -8,7 +8,7 @@ struct LogoTitleView: View {
 
     var body: some View {
         if let url = item.logoImageURL {
-            AsyncImage(url: url, transaction: Transaction(animation: .easeOut(duration: 0.25))) { phase in
+            CachedImage(url: url) { phase in
                 switch phase {
                 case .success(let image):
                     image.resizable().scaledToFit()

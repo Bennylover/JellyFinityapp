@@ -1,8 +1,8 @@
 import Foundation
 
 /// A person credited on a movie or episode (actor, director, writer…).
-struct CastMember: Identifiable, Hashable, Sendable {
-    enum Role: String, Sendable {
+struct CastMember: Identifiable, Hashable, Sendable, Codable {
+    enum Role: String, Sendable, Codable {
         case actor, director, writer, producer, other
 
         var title: String {

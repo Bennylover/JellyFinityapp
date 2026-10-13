@@ -17,6 +17,7 @@ final class DownloadManager {
     }
 
     private(set) var records: [DownloadRecord] = []
+    private(set) var artists: [String: OfflineArtist] = [:]
     private(set) var progress: [String: Double] = [:]
     private(set) var converting: Set<String> = []
     var errorMessage: String?
@@ -25,6 +26,8 @@ final class DownloadManager {
     @ObservationIgnored private var tasks: [String: URLSessionDownloadTask] = [:]
     @ObservationIgnored private let delegate = DownloadSessionDelegate()
     @ObservationIgnored private let session: URLSession
+    @ObservationIgnored private weak var store: SessionStore?
+    @ObservationIgnored private var didBackfill = false
 
     init() {
         let configuration = URLSessionConfiguration.default
@@ -34,6 +37,7 @@ final class DownloadManager {
             Task { @MainActor in self?.handle(event) }
         }
         records = Self.loadRecords()
+        artists = Self.loadArtists()
     }
 
     // MARK: - Queries
@@ -70,6 +74,7 @@ final class DownloadManager {
             return
         }
         let convert = UserDefaults.standard.object(forKey: Self.convertKey) as? Bool ?? true
+        self.store = store
         let userId = store.session?.userId ?? ""
         for item in items where item.downloadLibrary != nil && state(for: item.id) == .none {
             pending[item.id] = Pending(item: item, group: group)
@@ -106,13 +111,27 @@ final class DownloadManager {
     }
 
     func remove(_ ids: [String]) {
-        for id in ids {
-            guard let record = record(for: id) else { continue }
-            try? FileManager.default.removeItem(at: record.fileURL)
-            if let artwork = record.artworkURL { try? FileManager.default.removeItem(at: artwork) }
-        }
+        let removed = records.filter { ids.contains($0.id) }
         records.removeAll { ids.contains($0.id) }
+        let inUse = Set(records.flatMap(\.allFileNames))
+        for name in removed.flatMap(\.allFileNames) where !inUse.contains(name) {
+            try? FileManager.default.removeItem(at: DownloadStorage.directory.appendingPathComponent(name))
+        }
+        pruneArtists()
         save()
+    }
+
+    /// Drops saved artist pictures once no downloaded album by that artist is left.
+    private func pruneArtists() {
+        let wanted = Set(records.filter { $0.library == .albums }.compactMap { $0.groupItem?.subtitle?.lowercased() })
+        let inUse = Set(records.flatMap(\.allFileNames))
+        for (key, artist) in artists where !wanted.contains(key) {
+            for name in [artist.imageFileName, artist.backdropFileName].compactMap({ $0 }) where !inUse.contains(name) {
+                try? FileManager.default.removeItem(at: DownloadStorage.directory.appendingPathComponent(name))
+            }
+            artists[key] = nil
+        }
+        saveArtists()
     }
 
     func saveResume(id: String, seconds: Double) {
@@ -163,20 +182,56 @@ final class DownloadManager {
         progress[id] = nil
         converting.remove(id)
         save()
-        if let url = item.primaryImageURL {
-            Task { await saveArtwork(from: url, for: id) }
+        Task { await saveOfflineMetadata(item: item, group: group) }
+    }
+
+    /// Saves full details and pictures next to the file so the page looks complete offline.
+    private func saveOfflineMetadata(item: MediaItem, group: MediaItem?) async {
+        let id = item.id
+        var full = item
+        if let client = store?.client, let userId = store?.session?.userId,
+           let detail = try? await client.detail(userId: userId, itemId: id) {
+            full = detail
+        }
+        let artwork = await saveImage(item.primaryImageURL ?? full.primaryImageURL, name: "\(DownloadStorage.safeName(id)).jpg")
+        let backdrop = await saveImage(full.backdropImageURL, name: "\(DownloadStorage.safeName(id))-backdrop.jpg")
+        let logo = await saveImage(full.logoImageURL, name: "\(DownloadStorage.safeName(id))-logo.jpg")
+        var groupArtwork: String?
+        if let group {
+            groupArtwork = await saveImage(group.primaryImageURL, name: "\(DownloadStorage.safeName(group.id))-group.jpg")
+        }
+        if let index = records.firstIndex(where: { $0.id == id }) {
+            records[index].metadata = full
+            records[index].groupItem = group
+            records[index].artworkFileName = artwork
+            records[index].backdropFileName = backdrop
+            records[index].logoFileName = logo
+            records[index].groupArtworkFileName = groupArtwork
+            save()
+        }
+        if item.downloadLibrary == .albums, let artistName = group?.subtitle ?? item.subtitle {
+            await saveArtist(named: artistName)
         }
     }
 
-    private func saveArtwork(from url: URL, for id: String) async {
+    private func saveArtist(named name: String) async {
+        let key = name.lowercased()
+        guard artists[key] == nil, let hit = await store?.fetchArtistDetails(name: name) else { return }
+        let base = DownloadStorage.safeName("artist-\(key)")
+        let image = await saveImage(hit.imageURL, name: "\(base).jpg")
+        let backdrop = await saveImage(hit.backdropURL, name: "\(base)-backdrop.jpg")
+        artists[key] = OfflineArtist(name: hit.name, imageFileName: image, backdropFileName: backdrop)
+        saveArtists()
+    }
+
+    /// Downloads a picture into the downloads folder; returns its file name, or nil on failure.
+    private func saveImage(_ url: URL?, name: String) async -> String? {
+        guard let url, !url.isFileURL else { return nil }
         guard let (data, response) = try? await URLSession.shared.data(from: url),
-              (response as? HTTPURLResponse)?.statusCode == 200, !data.isEmpty else { return }
-        let name = "\(DownloadStorage.safeName(id)).jpg"
+              (response as? HTTPURLResponse)?.statusCode == 200, !data.isEmpty else { return nil }
         let destination = DownloadStorage.directory.appendingPathComponent(name)
-        guard (try? data.write(to: destination, options: .atomic)) != nil,
-              let index = records.firstIndex(where: { $0.id == id }) else { return }
-        records[index].artworkFileName = name
-        save()
+        guard (try? data.write(to: destination, options: .atomic)) != nil else { return nil }
+        return name
     }
 
     // MARK: - Persistence
@@ -184,6 +239,19 @@ final class DownloadManager {
     private func save() {
         guard let data = try? JSONEncoder().encode(records) else { return }
         try? data.write(to: DownloadStorage.indexURL, options: .atomic)
+    }
+
+    private static var artistsURL: URL { DownloadStorage.directory.appendingPathComponent("artists.json") }
+
+    private func saveArtists() {
+        guard let data = try? JSONEncoder().encode(artists) else { return }
+        try? data.write(to: Self.artistsURL, options: .atomic)
+    }
+
+    private static func loadArtists() -> [String: OfflineArtist] {
+        guard let data = try? Data(contentsOf: artistsURL),
+              let decoded = try? JSONDecoder().decode([String: OfflineArtist].self, from: data) else { return [:] }
+        return decoded
     }
 
     private static func loadRecords() -> [DownloadRecord] {

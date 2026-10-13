@@ -94,7 +94,7 @@ private struct CastAvatar: View {
                 .font(.system(size: size * 0.32, weight: .bold, design: .rounded))
                 .foregroundStyle(theme.accent)
             if let url = member.imageURL {
-                AsyncImage(url: url) { phase in
+                CachedImage(url: url) { phase in
                     if let image = phase.image {
                         image.resizable().scaledToFill()
                     }

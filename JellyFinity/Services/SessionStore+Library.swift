@@ -111,6 +111,12 @@ extension SessionStore {
         return await client.searchArtists(userId: userId, term: term)
     }
 
+    func fetchArtistDetails(name: String) async -> ArtistHit? {
+        if isDemo { return nil }
+        guard let (client, userId) = try? requireClient() else { return nil }
+        return await client.artistDetails(userId: userId, name: name)
+    }
+
     func fetchArtistAlbums(artist: String) async throws -> [MediaItem] {
         if isDemo { return SampleData.items(for: .albums).filter { $0.subtitle == artist } }
         let (client, userId) = try requireClient()

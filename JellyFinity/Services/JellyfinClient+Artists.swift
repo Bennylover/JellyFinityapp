@@ -5,12 +5,14 @@ struct ArtistHit: Identifiable, Hashable, Sendable {
     let id: String
     let name: String
     let imageURL: URL?
+    let backdropURL: URL?
     let seed: Int
 
-    init(id: String, name: String, imageURL: URL?) {
+    init(id: String, name: String, imageURL: URL?, backdropURL: URL? = nil) {
         self.id = id
         self.name = name
         self.imageURL = imageURL
+        self.backdropURL = backdropURL
         self.seed = name.unicodeScalars.reduce(0) { ($0 &+ Int($1.value)) % 9973 }
     }
 }
@@ -24,9 +26,11 @@ private struct ArtistListDTO: Decodable {
         let type: String?
         let imageTags: [String: String]?
         let primaryImageTag: String?
+        let backdropImageTags: [String]?
         enum CodingKeys: String, CodingKey {
             case id = "Id", itemId = "ItemId", name = "Name", type = "Type"
             case imageTags = "ImageTags", primaryImageTag = "PrimaryImageTag"
+            case backdropImageTags = "BackdropImageTags"
         }
     }
     let items: [Entry]?
@@ -61,6 +65,14 @@ extension JellyfinClient {
         return Array(hits.prefix(15))
     }
 
+    /// The artist entry whose name matches exactly, used for header artwork on the artist page.
+    func artistDetails(userId: String, name: String) async -> ArtistHit? {
+        let hits = await searchArtists(userId: userId, term: name)
+        let wanted = Self.normalized(name)
+        let exact = hits.filter { Self.normalized($0.name) == wanted }
+        return exact.first { $0.backdropURL != nil } ?? exact.first
+    }
+
     private func artistEntries(_ path: String, _ query: [URLQueryItem]) async -> [ArtistListDTO.Entry] {
         do {
             let data = try await send(path, query: query)
@@ -83,8 +95,10 @@ extension JellyfinClient {
             guard key.contains(needle), seen.insert(key).inserted else { continue }
             let hasImage = entry.imageTags?["Primary"] != nil || entry.primaryImageTag != nil
             let image = hasImage ? imageURL(id, type: "Primary", maxWidth: 300) : nil
+            let hasBackdrop = !(entry.backdropImageTags ?? []).isEmpty
+            let backdrop = hasBackdrop ? imageURL(id, type: "Backdrop", maxWidth: 1400) : nil
             let score = key == needle ? 0 : (key.hasPrefix(needle) ? 1 : 2)
-            hits.append((ArtistHit(id: id, name: name, imageURL: image), score))
+            hits.append((ArtistHit(id: id, name: name, imageURL: image, backdropURL: backdrop), score))
         }
         return hits.sorted { $0.score < $1.score }.map(\.hit)
     }

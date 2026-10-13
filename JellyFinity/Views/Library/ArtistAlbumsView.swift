@@ -13,6 +13,7 @@ struct ArtistAlbumsView: View {
     @State private var albums: [MediaItem] = []
     @State private var isLoading = true
     @State private var failed = false
+    @State private var details: ArtistHit?
 
     private let columns = [GridItem(.adaptive(minimum: 150, maximum: 200), spacing: 14, alignment: .top)]
 
@@ -20,33 +21,27 @@ struct ArtistAlbumsView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 header
-                content
+                content.padding(.horizontal)
             }
-            .padding(.horizontal)
             .padding(.bottom, 24)
         }
+        .ignoresSafeArea(edges: .top)
         .background(theme.background.ignoresSafeArea())
-        .navigationTitle(artist)
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(.hidden, for: .navigationBar)
+        .task { await loadDetails() }
         .task { await load() }
     }
 
     private var header: some View {
-        HStack(spacing: 14) {
-            ZStack {
-                Circle().fill(theme.gradient).frame(width: 64, height: 64)
-                Image(systemName: "music.mic").font(.title2).foregroundStyle(.white)
-            }
-            VStack(alignment: .leading, spacing: 2) {
-                Text(artist).font(.title2.weight(.bold)).lineLimit(2)
-                if !isLoading && !albums.isEmpty {
-                    Text("\(albums.count) \(albums.count == 1 ? "album" : "albums")")
-                        .font(.subheadline).foregroundStyle(.secondary)
-                }
-            }
-            Spacer(minLength: 0)
-        }
-        .padding(.top, 8)
+        ArtistHeroHeader(name: artist, details: details,
+                         fallbackArt: albums.first?.backdropImageURL ?? albums.first?.primaryImageURL,
+                         albumCount: isLoading ? nil : albums.count)
+    }
+
+    private func loadDetails() async {
+        details = await store.fetchArtistDetails(name: artist)
     }
 
     @ViewBuilder

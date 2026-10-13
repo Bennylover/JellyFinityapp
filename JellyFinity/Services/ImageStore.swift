@@ -10,6 +10,8 @@ final class ImageStore: @unchecked Sendable {
     private let directory: URL
     private let session: URLSession
     private let refreshAfter: TimeInterval = 7 * 24 * 3600
+    private let lock = NSLock()
+    private var inFlight: [String: Task<UIImage?, Never>] = [:]
 
     private init() {
         let base = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
@@ -39,14 +41,33 @@ final class ImageStore: @unchecked Sendable {
             memory.setObject(fresh, forKey: key, cost: 1_000_000)
             return fresh
         }
-        if let downloaded = await download(url, saveTo: file) {
-            memory.setObject(downloaded, forKey: key, cost: 1_000_000)
-            return downloaded
+        // One shared download per picture: it keeps going (and fills the cache) even if the
+        // view that asked for it scrolls away, and duplicate views don't hit the server twice.
+        return await sharedDownload(url, file: file).value
+    }
+
+    private func sharedDownload(_ url: URL, file: URL) -> Task<UIImage?, Never> {
+        lock.lock()
+        defer { lock.unlock() }
+        if let existing = inFlight[url.absoluteString] { return existing }
+        let task = Task.detached(priority: .userInitiated) { [self] () -> UIImage? in
+            var result = await download(url, saveTo: file)
+            if result == nil {
+                // Offline or the server is slow: an old copy is better than nothing.
+                result = UIImage(contentsOfFile: file.path)
+            }
+            if let result { memory.setObject(result, forKey: url.absoluteString as NSString, cost: 1_000_000) }
+            finish(url)
+            return result
         }
-        // Offline or the server is slow: an old copy is better than nothing.
-        guard let stale = UIImage(contentsOfFile: file.path) else { return nil }
-        memory.setObject(stale, forKey: key, cost: 1_000_000)
-        return stale
+        inFlight[url.absoluteString] = task
+        return task
+    }
+
+    private func finish(_ url: URL) {
+        lock.lock()
+        inFlight[url.absoluteString] = nil
+        lock.unlock()
     }
 
     /// Warms the disk cache for pictures we want available later (cast portraits, for example).
@@ -66,7 +87,6 @@ final class ImageStore: @unchecked Sendable {
     /// Tries up to three times; a freshly cleaned server can be slow to resize pictures.
     private func download(_ url: URL, saveTo file: URL) async -> UIImage? {
         for attempt in 0..<3 {
-            if Task.isCancelled { return nil }
             do {
                 let (data, response) = try await session.data(from: url)
                 let status = (response as? HTTPURLResponse)?.statusCode ?? 0

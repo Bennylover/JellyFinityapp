@@ -30,17 +30,27 @@ struct CachedImage<Content: View>: View {
     var body: some View {
         content(phase)
             .task(id: url) {
-                let alreadyShown = phase.image != nil
-                if let loaded = await ImageStore.shared.image(for: url) {
-                    let image = Image(uiImage: loaded)
-                    if alreadyShown {
-                        phase = .success(image)
-                    } else {
-                        withAnimation(.easeOut(duration: 0.25)) { phase = .success(image) }
-                    }
-                } else if !Task.isCancelled {
-                    phase = .failure
-                }
+                await load()
             }
+    }
+
+    /// Loads the picture, and quietly tries again a few times if the server wasn't ready.
+    private func load() async {
+        let alreadyShown = phase.image != nil
+        for attempt in 0..<4 {
+            if let loaded = await ImageStore.shared.image(for: url) {
+                let image = Image(uiImage: loaded)
+                if alreadyShown {
+                    phase = .success(image)
+                } else {
+                    withAnimation(.easeOut(duration: 0.25)) { phase = .success(image) }
+                }
+                return
+            }
+            if Task.isCancelled { return }
+            if attempt < 3 { try? await Task.sleep(for: .seconds(4)) }
+            if Task.isCancelled { return }
+        }
+        phase = .failure
     }
 }

@@ -97,6 +97,7 @@ struct LibraryView: View {
             }
             .toolbar { sortMenu }
             .navigationDestination(for: MediaItem.self) { MediaDetailView(item: $0) }
+            .navigationDestination(for: ArtistRoute.self) { ArtistAlbumsView(artist: $0.name) }
             .fullScreenCover(item: $playing) { VideoPlayerScreen(item: $0) }
             .refreshable {
                 await loadHero()
@@ -217,7 +218,7 @@ private struct GenreChipRow: View {
     }
 }
 
-private struct LibraryCard: View {
+struct LibraryCard: View {
     let item: MediaItem
     let kind: LibraryKind
 

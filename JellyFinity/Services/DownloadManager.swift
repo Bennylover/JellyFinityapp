@@ -18,6 +18,7 @@ final class DownloadManager {
 
     private(set) var records: [DownloadRecord] = []
     private(set) var progress: [String: Double] = [:]
+    private(set) var converting: Set<String> = []
     var errorMessage: String?
 
     @ObservationIgnored private var pending: [String: Pending] = [:]
@@ -68,21 +69,40 @@ final class DownloadManager {
             errorMessage = "Connect to your own Jellyfin server to download media."
             return
         }
+        let convert = UserDefaults.standard.object(forKey: Self.convertKey) as? Bool ?? true
+        let userId = store.session?.userId ?? ""
         for item in items where item.downloadLibrary != nil && state(for: item.id) == .none {
-            let task = session.downloadTask(with: client.downloadRequest(itemId: item.id))
-            task.taskDescription = item.id
             pending[item.id] = Pending(item: item, group: group)
-            tasks[item.id] = task
             progress[item.id] = 0
-            task.resume()
+            Task { [weak self] in
+                let plan = await client.downloadPlan(userId: userId, item: item, convertIfNeeded: convert)
+                self?.start(plan, for: item)
+            }
         }
     }
+
+    /// Whether downloads are converted by the server when the original wouldn't play on iPhone.
+    static let convertKey = "jl.convertDownloads"
+
+    private func start(_ plan: DownloadPlan, for item: MediaItem) {
+        guard pending[item.id] != nil, tasks[item.id] == nil else { return }
+        let task = session.downloadTask(with: plan.request)
+        task.taskDescription = item.id
+        if let expected = plan.expectedBytes { task.countOfBytesClientExpectsToReceive = expected }
+        if plan.isConverted { converting.insert(item.id) }
+        tasks[item.id] = task
+        task.resume()
+    }
+
+    /// Items the server is converting while they download.
+    func isConverting(_ id: String) -> Bool { converting.contains(id) }
 
     func cancel(_ id: String) {
         tasks[id]?.cancel()
         tasks[id] = nil
         pending[id] = nil
         progress[id] = nil
+        converting.remove(id)
     }
 
     func remove(_ ids: [String]) {
@@ -116,6 +136,7 @@ final class DownloadManager {
             tasks[id] = nil
             pending[id] = nil
             progress[id] = nil
+            converting.remove(id)
             errorMessage = message
         }
     }
@@ -140,6 +161,7 @@ final class DownloadManager {
         tasks[id] = nil
         pending[id] = nil
         progress[id] = nil
+        converting.remove(id)
         save()
         if let url = item.primaryImageURL {
             Task { await saveArtwork(from: url, for: id) }

@@ -13,8 +13,11 @@ final class DownloadSessionDelegate: NSObject, URLSessionDownloadDelegate, @unch
 
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64,
                     totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-        guard totalBytesExpectedToWrite > 0, let id = downloadTask.taskDescription else { return }
-        let fraction = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite)
+        guard let id = downloadTask.taskDescription else { return }
+        let guess = downloadTask.countOfBytesClientExpectsToReceive
+        let expected = totalBytesExpectedToWrite > 0 ? totalBytesExpectedToWrite : max(guess, 0)
+        guard expected > 0 else { return }
+        let fraction = min(Double(totalBytesWritten) / Double(expected), 0.99)
         guard fraction - (lastSent[id] ?? -1) >= 0.01 else { return }
         lastSent[id] = fraction
         handler?(.progress(id: id, fraction: fraction))

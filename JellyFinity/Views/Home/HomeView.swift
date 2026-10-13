@@ -23,6 +23,7 @@ struct HomeView: View {
             .refreshable { await session.refresh() }
             .toolbar(.hidden, for: .navigationBar)
             .navigationDestination(for: MediaItem.self) { MediaDetailView(item: $0) }
+            .navigationDestination(for: ArtistRoute.self) { ArtistAlbumsView(artist: $0.name) }
             .task {
                 if session.snapshot.isEmpty { await session.refresh() }
             }

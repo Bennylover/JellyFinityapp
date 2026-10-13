@@ -165,7 +165,19 @@ struct MediaDetailView: View {
                 .shadow(color: theme.accent.opacity(0.35), radius: 22, y: 12)
             Text(item.name).font(.title.weight(.bold)).multilineTextAlignment(.center)
             if let subtitle = item.subtitle {
-                Text(subtitle).font(.headline).foregroundStyle(.secondary)
+                if item.kind == .album {
+                    NavigationLink(value: ArtistRoute(name: subtitle)) {
+                        HStack(spacing: 4) {
+                            Text(subtitle)
+                            Image(systemName: "chevron.right").font(.caption.weight(.bold))
+                        }
+                        .font(.headline)
+                        .foregroundStyle(theme.accent)
+                    }
+                    .accessibilityHint("Shows all albums by this artist")
+                } else {
+                    Text(subtitle).font(.headline).foregroundStyle(.secondary)
+                }
             }
         }
         .frame(maxWidth: .infinity)

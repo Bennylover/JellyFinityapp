@@ -17,6 +17,7 @@
 		2B63A030E11E78AA8CAA4179 /* LibraryMixCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E37E6EE645A73CD5719FB43 /* LibraryMixCard.swift */; };
 		31FE211BE1C06CFC0FA74DCA /* CastSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C77C936B49B63749BC7D810 /* CastSection.swift */; };
 		33DF85EB62DE8459BEA2AF55 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 909938F40403CD854759C677 /* AudioPlayer.swift */; };
+		3F8A2F87D2A560ECB152332E /* JellyfinClient+Convert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4990F60436AEA30CC5175B9E /* JellyfinClient+Convert.swift */; };
 		434A33973E2C2D1D867BBC4A /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E23BEB0A4BD722876BD721 /* Theme.swift */; };
 		47E3A5A52D08F99DB2F9B864 /* MediaDetailSections.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDD06D9AC3B91531435B74C5 /* MediaDetailSections.swift */; };
 		4A28FBC6B2E741CC012C713C /* MediaItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B89FDB27EA962BB32814015 /* MediaItem.swift */; };
@@ -27,6 +28,7 @@
 		8BF1D733D7C7BBAC26F07ABA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5B5692C561AF9CBB633111A5 /* Assets.xcassets */; };
 		8D665E7EFDA498767DB4E080 /* RecentHeroHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1C68FBEF9B45077750F11E0 /* RecentHeroHeader.swift */; };
 		95AFBD1B7071B59ACD99B766 /* SampleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 383E92E52036AA9C456F1DBC /* SampleData.swift */; };
+		9A30FF3832B2123932ACCC8F /* ArtistAlbumsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E11696C49F5E3B3203C33E /* ArtistAlbumsView.swift */; };
 		A120469AB5534631FED7BA09 /* NowPlayingViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350CE045C9C8D696250E3861 /* NowPlayingViews.swift */; };
 		ACAC3E36938CA8951CB5640E /* ConnectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99A1ABABE07EDF9A2835A45 /* ConnectView.swift */; };
 		B42DD091B7E7B5C77CE049E2 /* DownloadSessionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55847D031E59549838139B81 /* DownloadSessionDelegate.swift */; };
@@ -48,6 +50,7 @@
 
 /* Begin PBXFileReference section */
 		10AE1F861FAE7E0760363DAB /* DownloadButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadButtons.swift; sourceTree = "<group>"; };
+		15E11696C49F5E3B3203C33E /* ArtistAlbumsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistAlbumsView.swift; sourceTree = "<group>"; };
 		1888870774B17F886EB88BBE /* SessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStore.swift; sourceTree = "<group>"; };
 		1A02271471F036D09F0D24E1 /* SessionStore+Library.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SessionStore+Library.swift"; sourceTree = "<group>"; };
 		1B89FDB27EA962BB32814015 /* MediaItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaItem.swift; sourceTree = "<group>"; };
@@ -62,6 +65,7 @@
 		39291A8783832977BF89E858 /* DownloadsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadsView.swift; sourceTree = "<group>"; };
 		3D692FA7F0778DD062237B49 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
 		47C1C1E9A0CD5CE88414D95D /* IMDbClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IMDbClient.swift; sourceTree = "<group>"; };
+		4990F60436AEA30CC5175B9E /* JellyfinClient+Convert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "JellyfinClient+Convert.swift"; sourceTree = "<group>"; };
 		55847D031E59549838139B81 /* DownloadSessionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadSessionDelegate.swift; sourceTree = "<group>"; };
 		57288B9F8C703027CCE6C764 /* JellyFinityApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JellyFinityApp.swift; sourceTree = "<group>"; };
 		5B5692C561AF9CBB633111A5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -97,6 +101,7 @@
 				55847D031E59549838139B81 /* DownloadSessionDelegate.swift */,
 				47C1C1E9A0CD5CE88414D95D /* IMDbClient.swift */,
 				C7C1BC6453C2D4B32DBF97F0 /* JellyfinClient.swift */,
+				4990F60436AEA30CC5175B9E /* JellyfinClient+Convert.swift */,
 				AEF77BB0CB4D50077244392A /* JellyfinClient+Library.swift */,
 				2741948E2B24DE74DF41D6B1 /* JellyfinDTOs.swift */,
 				3D692FA7F0778DD062237B49 /* KeychainStore.swift */,
@@ -159,6 +164,7 @@
 		670B6DD73BB67BD1C0E2B8E5 /* Library */ = {
 			isa = PBXGroup;
 			children = (
+				15E11696C49F5E3B3203C33E /* ArtistAlbumsView.swift */,
 				94DB1839CA91D7244F7DAFD0 /* LibraryView.swift */,
 				E1C68FBEF9B45077750F11E0 /* RecentHeroHeader.swift */,
 			);
@@ -304,6 +310,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9A30FF3832B2123932ACCC8F /* ArtistAlbumsView.swift in Sources */,
 				0393DF7CFA5201C2D674B8EF /* ArtworkView.swift in Sources */,
 				33DF85EB62DE8459BEA2AF55 /* AudioPlayer.swift in Sources */,
 				F24F70547DCD4B13537E3993 /* CastMember.swift in Sources */,
@@ -318,6 +325,7 @@
 				6DCC3463FAEB58B4B4E88FE6 /* HomeView.swift in Sources */,
 				03C04B4E003C6C30A5784EC7 /* IMDbClient.swift in Sources */,
 				5F97E577B30320DB41FDEE69 /* JellyFinityApp.swift in Sources */,
+				3F8A2F87D2A560ECB152332E /* JellyfinClient+Convert.swift in Sources */,
 				8A9E97F715FC65355A7991BC /* JellyfinClient+Library.swift in Sources */,
 				CC1AD568A085045A44A99C68 /* JellyfinClient.swift in Sources */,
 				08826C9867AF6903E623CC95 /* JellyfinDTOs.swift in Sources */,

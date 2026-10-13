@@ -40,7 +40,8 @@ struct DownloadButton: View {
         let total = Double(items.count)
         let finished = Double(doneCount) + activeFractions.reduce(0, +)
         let fraction = min(finished / total, 1)
-        let title = "Downloading \(Int(fraction * 100))%"
+        let converting = items.contains { downloads.isConverting($0.id) }
+        let title = (converting ? "Converting " : "Downloading ") + "\(Int(fraction * 100))%"
         return Button {
             for item in items { downloads.cancel(item.id) }
         } label: {

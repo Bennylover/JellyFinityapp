@@ -96,9 +96,10 @@ struct ItemDTO: Decodable, Sendable {
     let albumPrimaryImageTag: String?
     let artists: [String]?
     let mediaStreams: [MediaStream]?
+    let container: String?
 
     enum CodingKeys: String, CodingKey {
-        case mediaStreams = "MediaStreams", people = "People", providerIds = "ProviderIds"
+        case container = "Container", mediaStreams = "MediaStreams", people = "People", providerIds = "ProviderIds"
         case id = "Id", name = "Name", type = "Type", productionYear = "ProductionYear"
         case runTimeTicks = "RunTimeTicks", communityRating = "CommunityRating"
         case officialRating = "OfficialRating", genres = "Genres", overview = "Overview"

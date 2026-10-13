@@ -26,6 +26,9 @@ Prefer native Apple-like UI. Avoid web-dashboard-style components unless explici
 - Branding: user's jellyfish-infinity logo is `Image("JellyLogo")` (Connect + Home header) and AppIcon.png (resized to 1024 via sips once; generateAppIcon rejects non-1024 images).
 - Downloads: `DownloadManager` (env, foreground URLSession, original file via `/Items/{id}/Download`, header auth), records in Application Support/Downloads/index.json, `MediaItem.localFileURL` makes Audio/Video players play offline. UI: toolbar link in `LibraryView` → `DownloadsView(kind:)`; `DownloadButton`/`DownloadIconButton` in detail views. Demo mode hides download buttons. Downloads pause when app is suspended; MKV etc. may not play in AVPlayer.
 
+- Download conversion: iPhone can't transcode MKV itself; `JellyfinClient.downloadPlan` probes container/codecs and, if not AVPlayer-friendly, asks the server for `Videos/{id}/stream.mp4` (h264/aac) or `Audio/{id}/stream.mp3`. Toggle `jl.convertDownloads` (Settings, default on). Progress uses `countOfBytesClientExpectsToReceive` estimate.
+- Artist page: `ArtistRoute` → `ArtistAlbumsView`, linked from album detail artist name (destination registered in LibraryView and HomeView).
+
 ## Pitfalls
 
 - iOS 27 simulator runtime may be missing locally; build works but runApp can fail to boot.

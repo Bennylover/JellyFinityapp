@@ -100,6 +100,12 @@ extension SessionStore {
         return try await client.episodes(userId: userId, seriesId: seriesId, seasonId: season.id)
     }
 
+    func fetchArtistAlbums(artist: String) async throws -> [MediaItem] {
+        if isDemo { return SampleData.items(for: .albums).filter { $0.subtitle == artist } }
+        let (client, userId) = try requireClient()
+        return try await client.artistAlbums(userId: userId, artist: artist)
+    }
+
     func fetchTracks(of album: MediaItem) async throws -> [MediaItem] {
         if isDemo { return SampleData.tracks(of: album) }
         let (client, userId) = try requireClient()

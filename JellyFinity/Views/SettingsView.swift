@@ -4,6 +4,7 @@ struct SettingsView: View {
     @Environment(SessionStore.self) private var session
     @Environment(\.appTheme) private var theme
     @Environment(\.dismiss) private var dismiss
+    @AppStorage(DownloadManager.convertKey) private var convertDownloads = true
     @AppStorage("jl.theme") private var themeRaw = AppTheme.aurora.rawValue
     @AppStorage("jl.appearance") private var appearanceRaw = AppearanceMode.system.rawValue
 
@@ -24,6 +25,13 @@ struct SettingsView: View {
                     .pickerStyle(.segmented)
                 }
                 TMDBKeySection()
+                Section {
+                    Toggle("Convert for iPhone", isOn: $convertDownloads)
+                } header: {
+                    Text("Downloads")
+                } footer: {
+                    Text("When a file wouldn't play on iPhone (like MKV), your server converts it to MP4 or MP3 while it downloads. Conversion uses your server's processing power and can take a while.")
+                }
                 accountSection
             }
             .scrollContentBackground(.hidden)

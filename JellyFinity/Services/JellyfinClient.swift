@@ -166,7 +166,7 @@ struct JellyfinClient: Sendable {
         }
     }
 
-    private var authorizationHeader: String {
+    var authorizationHeader: String {
         var header = "MediaBrowser Client=\"JellyFinity\", Device=\"iPhone\", DeviceId=\"\(deviceId)\", Version=\"1.0\""
         if let token { header += ", Token=\"\(token)\"" }
         return header

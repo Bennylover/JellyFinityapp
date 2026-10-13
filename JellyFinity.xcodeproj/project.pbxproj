@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0393DF7CFA5201C2D674B8EF /* ArtworkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86B5AF8F32544CD5D0F3F33 /* ArtworkView.swift */; };
+		03C04B4E003C6C30A5784EC7 /* IMDbClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C1C1E9A0CD5CE88414D95D /* IMDbClient.swift */; };
 		08826C9867AF6903E623CC95 /* JellyfinDTOs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2741948E2B24DE74DF41D6B1 /* JellyfinDTOs.swift */; };
 		0A31C71122EB039D89EB8083 /* HomeCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5DF76CD444D6CF0465BE564 /* HomeCards.swift */; };
 		12E56924AA579588BF85ADAF /* VideoPlayerScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8EAE93A0824F0C4CB794865 /* VideoPlayerScreen.swift */; };
@@ -50,6 +51,7 @@
 		350CE045C9C8D696250E3861 /* NowPlayingViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NowPlayingViews.swift; sourceTree = "<group>"; };
 		383E92E52036AA9C456F1DBC /* SampleData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleData.swift; sourceTree = "<group>"; };
 		3D692FA7F0778DD062237B49 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
+		47C1C1E9A0CD5CE88414D95D /* IMDbClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IMDbClient.swift; sourceTree = "<group>"; };
 		57288B9F8C703027CCE6C764 /* JellyFinityApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JellyFinityApp.swift; sourceTree = "<group>"; };
 		5B5692C561AF9CBB633111A5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6CA9FB0876E7F85724832FFB /* SampleData+Library.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SampleData+Library.swift"; sourceTree = "<group>"; };
@@ -76,6 +78,7 @@
 		0211513414CAB21D4632CD4F /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				47C1C1E9A0CD5CE88414D95D /* IMDbClient.swift */,
 				C7C1BC6453C2D4B32DBF97F0 /* JellyfinClient.swift */,
 				AEF77BB0CB4D50077244392A /* JellyfinClient+Library.swift */,
 				2741948E2B24DE74DF41D6B1 /* JellyfinDTOs.swift */,
@@ -279,6 +282,7 @@
 				ACAC3E36938CA8951CB5640E /* ConnectView.swift in Sources */,
 				0A31C71122EB039D89EB8083 /* HomeCards.swift in Sources */,
 				6DCC3463FAEB58B4B4E88FE6 /* HomeView.swift in Sources */,
+				03C04B4E003C6C30A5784EC7 /* IMDbClient.swift in Sources */,
 				5F97E577B30320DB41FDEE69 /* JellyFinityApp.swift in Sources */,
 				8A9E97F715FC65355A7991BC /* JellyfinClient+Library.swift in Sources */,
 				CC1AD568A085045A44A99C68 /* JellyfinClient.swift in Sources */,

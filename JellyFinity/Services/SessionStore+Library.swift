@@ -40,6 +40,21 @@ extension SessionStore {
         return full
     }
 
+    /// Replaces the cast with IMDb's list (looked up by IMDb ID, or by title + year when the server has none).
+    /// Directors, writers and other crew from Jellyfin are kept. Returns the item unchanged if IMDb has nothing.
+    func enrichWithIMDb(_ item: MediaItem) async -> MediaItem {
+        guard !isDemo, item.kind == .movie || item.kind == .series || item.kind == .episode else { return item }
+        let result = await IMDbClient.lookup(name: item.name, year: item.year, knownId: item.imdbId,
+                                             allowSearch: item.kind != .episode)
+        guard let result else { return item }
+        var updated = item
+        updated.imdbId = result.imdbId
+        if !result.actors.isEmpty {
+            updated.cast = result.actors + item.cast.filter { $0.role != .actor }
+        }
+        return updated
+    }
+
     /// The title you watched most recently in a movies or shows library, for the cinematic header.
     func fetchLastWatched(kind: LibraryKind) async -> MediaItem? {
         guard kind == .movies || kind == .shows else { return nil }

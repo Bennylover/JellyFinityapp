@@ -84,7 +84,10 @@ struct MediaDetailView: View {
         .background(theme.background.ignoresSafeArea())
         .navigationBarTitleDisplayMode(.inline)
         .fullScreenCover(item: $playingVideo) { VideoPlayerScreen(item: $0) }
-        .task { item = await store.fetchDetail(item) }
+        .task {
+            item = await store.fetchDetail(item)
+            item = await store.enrichWithIMDb(item)
+        }
     }
 
     // MARK: - Headers
@@ -108,13 +111,17 @@ struct MediaDetailView: View {
         let distance = max(scrollY, 0)
         return LogoTitleView(item: item, maxHeight: 80)
             .padding(.horizontal, 20)
-            .offset(y: 36 + min(distance * 0.5, 70))
-            .opacity(max(0, 1 - distance / 260))
+            .offset(y: 36 + min(distance * 0.7, 120))
+            .scaleEffect(max(0.75, 1 - distance / 900))
+            .opacity(max(0, 1 - distance / 220))
     }
 
+    /// The content's resting position is the highest `minY` we have seen (it settles after the nav bar
+    /// lays out); scrolling down lowers it, rubber-banding raises it and counts as zero.
     private func updateScroll(_ minY: CGFloat) {
-        if scrollBaseline == nil { scrollBaseline = minY }
-        scrollY = (scrollBaseline ?? minY) - minY
+        let baseline = max(scrollBaseline ?? minY, minY)
+        scrollBaseline = baseline
+        scrollY = baseline - minY
     }
 
     private var coverHeader: some View {

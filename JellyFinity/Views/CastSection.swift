@@ -7,7 +7,7 @@ struct CastSection: View {
     @State private var showingAll = false
 
     private var actors: [CastMember] { item.cast.filter { $0.role == .actor } }
-    private var topBilled: [CastMember] { Array(actors.prefix(10)) }
+    private var topBilled: [CastMember] { Array(actors.prefix(15)) }
 
     var body: some View {
         if !item.cast.isEmpty {
@@ -28,7 +28,7 @@ struct CastSection: View {
 
     private var header: some View {
         HStack {
-            Text("Top Billed Cast").font(.title3.weight(.bold))
+            Text("Cast").font(.title3.weight(.bold))
             Spacer()
             if item.imdbId != nil {
                 Text("IMDb").font(.caption.weight(.heavy))
@@ -139,7 +139,7 @@ private struct FullCastSheet: View {
                             Label("Open on IMDb", systemImage: "arrow.up.right.square")
                         }
                     } footer: {
-                        Text("Credits come from your Jellyfin server's metadata.")
+                        Text("Cast from IMDb. Crew from your Jellyfin server's metadata.")
                     }
                 }
             }

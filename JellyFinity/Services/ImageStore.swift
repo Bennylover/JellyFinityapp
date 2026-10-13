@@ -17,7 +17,8 @@ final class ImageStore: @unchecked Sendable {
         try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         memory.totalCostLimit = 80_000_000
         let configuration = URLSessionConfiguration.ephemeral
-        configuration.timeoutIntervalForRequest = 15
+        configuration.timeoutIntervalForRequest = 30
+        configuration.httpMaximumConnectionsPerHost = 6
         session = URLSession(configuration: configuration)
     }
 
@@ -62,12 +63,27 @@ final class ImageStore: @unchecked Sendable {
         return UIImage(contentsOfFile: file.path)
     }
 
+    /// Tries up to three times; a freshly cleaned server can be slow to resize pictures.
     private func download(_ url: URL, saveTo file: URL) async -> UIImage? {
-        guard let (data, response) = try? await session.data(from: url),
-              (response as? HTTPURLResponse)?.statusCode == 200,
-              let image = UIImage(data: data) else { return nil }
-        try? data.write(to: file, options: .atomic)
-        return image
+        for attempt in 0..<3 {
+            if Task.isCancelled { return nil }
+            do {
+                let (data, response) = try await session.data(from: url)
+                let status = (response as? HTTPURLResponse)?.statusCode ?? 0
+                if status == 200, let image = UIImage(data: data) {
+                    try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+                    try? data.write(to: file, options: .atomic)
+                    return image
+                }
+                NSLog("ImageStore: HTTP %d for %@", status, url.absoluteString)
+                if status == 404 || status == 401 || status == 403 { return nil }
+            } catch {
+                if (error as? URLError)?.code == .cancelled { return nil }
+                NSLog("ImageStore: %@ for %@", error.localizedDescription, url.absoluteString)
+            }
+            try? await Task.sleep(for: .seconds(Double(attempt + 1)))
+        }
+        return nil
     }
 
     private func diskURL(for url: URL) -> URL {

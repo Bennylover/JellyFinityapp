@@ -61,6 +61,7 @@ struct LibraryView: View {
     @State private var playing: MediaItem?
     @State private var genres: [String] = []
     @State private var selectedGenre: String?
+    @State private var artists: [ArtistHit] = []
 
     private var matchingGenres: [String] {
         let term = search.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -113,6 +114,7 @@ struct LibraryView: View {
                 guard !Task.isCancelled else { return }
                 await reload()
             }
+            .task(id: search) { await loadArtists() }
         }
         .miniPlayerInset()
     }
@@ -130,15 +132,32 @@ struct LibraryView: View {
         withAnimation(.easeOut(duration: 0.3)) { lastWatched = item }
     }
 
+    private func loadArtists() async {
+        let term = search.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard kind == .albums, !term.isEmpty else {
+            artists = []
+            return
+        }
+        try? await Task.sleep(for: .milliseconds(350))
+        guard !Task.isCancelled else { return }
+        let found = await store.searchArtists(term: term)
+        guard !Task.isCancelled else { return }
+        withAnimation(.easeOut(duration: 0.2)) { artists = found }
+    }
+
     @ViewBuilder
     private var content: some View {
         if !model.hasLoaded && model.items.isEmpty {
             ProgressView().frame(maxWidth: .infinity).padding(.top, 100)
         } else if model.items.isEmpty {
-            LibraryEmptyView(kind: kind, isSearching: !search.isEmpty || selectedGenre != nil,
-                             error: model.errorMessage)
+            if !artists.isEmpty { ArtistSearchRow(artists: artists) }
+            else {
+                LibraryEmptyView(kind: kind, isSearching: !search.isEmpty || selectedGenre != nil,
+                                 error: model.errorMessage)
+            }
         } else {
             VStack(alignment: .leading, spacing: 12) {
+                if !artists.isEmpty { ArtistSearchRow(artists: artists) }
                 Text("\(model.total) \(model.total == 1 ? "title" : "titles") · \(sort.label)")
                     .font(.footnote.weight(.medium))
                     .foregroundStyle(.secondary)

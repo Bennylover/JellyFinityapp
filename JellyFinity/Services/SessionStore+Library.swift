@@ -100,6 +100,17 @@ extension SessionStore {
         return try await client.episodes(userId: userId, seriesId: seriesId, seasonId: season.id)
     }
 
+    /// Artists matching a search term, for the Music tab's search results.
+    func searchArtists(term: String) async -> [ArtistHit] {
+        if isDemo {
+            let names = Set(SampleData.items(for: .albums).compactMap(\.subtitle))
+            return names.filter { $0.localizedCaseInsensitiveContains(term) }.sorted()
+                .map { ArtistHit(id: $0, name: $0, imageURL: nil) }
+        }
+        guard let (client, userId) = try? requireClient() else { return [] }
+        return (try? await client.searchArtists(userId: userId, term: term)) ?? []
+    }
+
     func fetchArtistAlbums(artist: String) async throws -> [MediaItem] {
         if isDemo { return SampleData.items(for: .albums).filter { $0.subtitle == artist } }
         let (client, userId) = try requireClient()

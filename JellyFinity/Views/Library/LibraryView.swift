@@ -56,6 +56,8 @@ struct LibraryView: View {
     @State private var model = LibraryModel()
     @State private var search = ""
     @State private var sort: LibrarySort = .recentlyAdded
+    @State private var lastWatched: MediaItem?
+    @State private var playing: MediaItem?
 
     private var columns: [GridItem] {
         [GridItem(.adaptive(minimum: kind.isSquare ? 150 : 108, maximum: 200), spacing: 14, alignment: .top)]
@@ -64,16 +66,27 @@ struct LibraryView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                content
-                    .padding(.horizontal)
-                    .padding(.bottom, 24)
+                VStack(alignment: .leading, spacing: 20) {
+                    hero
+                    content
+                }
+                .padding(.horizontal)
+                .padding(.bottom, 24)
             }
             .background(theme.background.ignoresSafeArea())
             .navigationTitle(kind.title)
             .searchable(text: $search, prompt: "Search \(kind.title.lowercased())")
             .toolbar { sortMenu }
             .navigationDestination(for: MediaItem.self) { MediaDetailView(item: $0) }
-            .refreshable { await reload() }
+            .fullScreenCover(item: $playing) { VideoPlayerScreen(item: $0) }
+            .refreshable {
+                await loadHero()
+                await reload()
+            }
+            .task { await loadHero() }
+            .onChange(of: playing?.id) { _, newValue in
+                if newValue == nil { Task { await loadHero() } }
+            }
             .task(id: "\(search)|\(sort.rawValue)") {
                 if !search.isEmpty { try? await Task.sleep(for: .milliseconds(350)) }
                 guard !Task.isCancelled else { return }
@@ -81,6 +94,19 @@ struct LibraryView: View {
             }
         }
         .miniPlayerInset()
+    }
+
+    @ViewBuilder
+    private var hero: some View {
+        if search.isEmpty, let lastWatched {
+            RecentHeroHeader(item: lastWatched) { playing = lastWatched }
+                .transition(.opacity)
+        }
+    }
+
+    private func loadHero() async {
+        let item = await store.fetchLastWatched(kind: kind)
+        withAnimation(.easeOut(duration: 0.3)) { lastWatched = item }
     }
 
     @ViewBuilder

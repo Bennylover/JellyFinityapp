@@ -1,11 +1,11 @@
-name: Jellyfin Lite
+name: JellyFinity
 options:
   bundleIdPrefix: com.superapp
   developmentLanguage: en
 
 settings:
   base:
-    PRODUCT_NAME: Jellyfin Lite
+    PRODUCT_NAME: JellyFinity
     SWIFT_VERSION: 6.0
     MARKETING_VERSION: 1.0
     CURRENT_PROJECT_VERSION: 1
@@ -21,17 +21,17 @@ settings:
       ENABLE_NS_ASSERTIONS: NO
 
 targets:
-  Jellyfin Lite:
+  JellyFinity:
     type: application
     platform: iOS
     deploymentTarget: '17.0'
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.superapp.jellyfinlite
+        PRODUCT_BUNDLE_IDENTIFIER: com.superapp.jellyfinity
     sources:
-      - path: Jellyfin Lite
+      - path: JellyFinity
     info:
-      path: Jellyfin Lite/Info.plist
+      path: JellyFinity/Info.plist
       properties:
         CFBundleDevelopmentRegion: $(DEVELOPMENT_LANGUAGE)
         CFBundleDisplayName: $(PRODUCT_NAME)
@@ -47,7 +47,7 @@ targets:
         LSRequiresIPhoneOS: true
         NSAppTransportSecurity:
           NSAllowsLocalNetworking: true
-        NSLocalNetworkUsageDescription: Jellyfin Lite connects to the Jellyfin server on your local network to stream your media.
+        NSLocalNetworkUsageDescription: JellyFinity connects to the Jellyfin server on your local network to stream your media.
         UIApplicationSupportsIndirectInputEvents: true
         UIBackgroundModes: [audio]
         UILaunchStoryboardName: LaunchScreen
@@ -63,10 +63,10 @@ targets:
           - UIInterfaceOrientationLandscapeRight
 
 schemes:
-  Jellyfin Lite:
+  JellyFinity:
     build:
       targets:
-        Jellyfin Lite: all
+        JellyFinity: all
     run:
       config: Debug
     archive:

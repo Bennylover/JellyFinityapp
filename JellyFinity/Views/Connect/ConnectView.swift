@@ -45,7 +45,7 @@ struct ConnectView: View {
                         .foregroundStyle(.white)
                 }
                 .shadow(color: theme.accent.opacity(0.45), radius: 24, y: 12)
-            Text("Jellyfin Lite")
+            Text("JellyFinity")
                 .font(.largeTitle.weight(.bold))
             Text("Movies, music and audiobooks —\nbeautifully yours.")
                 .font(.headline.weight(.regular))

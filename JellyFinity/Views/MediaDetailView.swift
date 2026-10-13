@@ -38,12 +38,19 @@ struct LogoTitleView: View {
     }
 }
 
+private struct ScrollMinYKey: PreferenceKey {
+    static let defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) { value = nextValue() }
+}
+
 struct MediaDetailView: View {
     @Environment(\.appTheme) private var theme
     @Environment(SessionStore.self) private var store
     @Environment(AudioPlayer.self) private var audio
     @State private var item: MediaItem
     @State private var playingVideo: MediaItem?
+    @State private var scrollY: CGFloat = 0
+    @State private var scrollBaseline: CGFloat?
 
     init(item: MediaItem) {
         _item = State(initialValue: item)
@@ -60,10 +67,19 @@ struct MediaDetailView: View {
                 if let overview = item.overview, !overview.isEmpty {
                     Text(overview).font(.body).foregroundStyle(.secondary)
                 }
+                CastSection(item: item)
                 related
             }
+            .background(GeometryReader { proxy in
+                Color.clear.preference(key: ScrollMinYKey.self,
+                                       value: proxy.frame(in: .named("detailScroll")).minY)
+            })
             .padding()
             .padding(.bottom, 24)
+        }
+        .coordinateSpace(name: "detailScroll")
+        .onPreferenceChange(ScrollMinYKey.self) { value in
+            MainActor.assumeIsolated { updateScroll(value) }
         }
         .background(theme.background.ignoresSafeArea())
         .navigationBarTitleDisplayMode(.inline)
@@ -77,15 +93,28 @@ struct MediaDetailView: View {
         ArtworkView(url: item.backdropImageURL ?? item.primaryImageURL, seed: item.artworkSeed, symbol: item.symbol)
             .frame(height: 320)
             .overlay(alignment: .bottom) {
-                LogoTitleView(item: item)
-                    .padding(.horizontal, 20)
-                    .padding(.top, 60)
-                    .padding(.bottom, 20)
-                    .frame(maxWidth: .infinity)
-                    .background(LinearGradient(colors: [.clear, .black.opacity(0.8)], startPoint: .top, endPoint: .bottom))
+                LinearGradient(colors: [.clear, .black.opacity(0.7)], startPoint: .top, endPoint: .bottom)
+                    .frame(height: 150)
             }
             .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
             .shadow(color: theme.accent.opacity(0.25), radius: 20, y: 10)
+            .overlay(alignment: .bottom) { parallaxLogo }
+            .padding(.bottom, 48)
+            .zIndex(1)
+    }
+
+    /// The logo straddles the bottom edge of the picture and drifts down (and fades) as the page scrolls.
+    private var parallaxLogo: some View {
+        let distance = max(scrollY, 0)
+        return LogoTitleView(item: item, maxHeight: 80)
+            .padding(.horizontal, 20)
+            .offset(y: 36 + min(distance * 0.5, 70))
+            .opacity(max(0, 1 - distance / 260))
+    }
+
+    private func updateScroll(_ minY: CGFloat) {
+        if scrollBaseline == nil { scrollBaseline = minY }
+        scrollY = (scrollBaseline ?? minY) - minY
     }
 
     private var coverHeader: some View {

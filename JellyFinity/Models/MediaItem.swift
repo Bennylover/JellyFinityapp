@@ -24,6 +24,16 @@ struct MediaItem: Identifiable, Hashable, Sendable {
     var parentIndexNumber: Int? = nil
     var durationSeconds: Double? = nil
     var resumeSeconds: Double? = nil
+    var hasWatchHistory = false
+    var cast: [CastMember] = []
+    var imdbId: String? = nil
+
+    /// "S2 · E4" style label for episodes.
+    var episodeLabel: String? {
+        guard kind == .episode, let indexNumber else { return nil }
+        if let parentIndexNumber { return "S\(parentIndexNumber) · E\(indexNumber)" }
+        return "E\(indexNumber)"
+    }
 
     var artworkSeed: Int {
         id.unicodeScalars.reduce(0) { $0 + Int($1.value) }

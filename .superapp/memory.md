@@ -17,7 +17,10 @@ Prefer native Apple-like UI. Avoid web-dashboard-style components unless explici
 
 - Jellyfin client: `JellyfinClient` (URLSession, `/Items`, `/Items/Counts`, `/Users/AuthenticateByName`), token in Keychain, session JSON in UserDefaults (`jl.session`), demo mode flag `jl.demo`.
 - Themes: `AppTheme` (aurora/ember/jade) with dynamic light/dark colors; `@AppStorage("jl.theme")` + `jl.appearance`; injected via `\.appTheme` env.
-- Tabs: Home (built), Movies/Music/Audiobooks (placeholders), Settings (theme picker, sign out).
+- Tabs: Home, Movies, Shows, Music, Books (real `LibraryView`s); Settings is a sheet from the Home avatar.
+- App renamed to JellyFinity (folder `JellyFinity/`, bundle id still com.superapp.jellyfinlite).
+- Video tracks: audio/subtitle chosen in `VideoPlayerScreen` menu; changing re-requests HLS with AudioStreamIndex / SubtitleStreamIndex (+SubtitleMethod=Encode, burned in).
+- Movies/Shows libraries show `RecentHeroHeader` (last watched via SortBy=DatePlayed, Limit 1).
 - ATS: only NSAllowsLocalNetworking; remote servers need HTTPS.
 
 ## Pitfalls

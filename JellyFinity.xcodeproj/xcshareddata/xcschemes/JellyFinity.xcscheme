@@ -15,10 +15,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "8B575E202E5E364875B6E056"
-               BuildableName = "Jellyfin Lite.app"
-               BlueprintName = "Jellyfin Lite"
-               ReferencedContainer = "container:Jellyfin Lite.xcodeproj">
+               BlueprintIdentifier = "29886D529B7728D6180FE6FC"
+               BuildableName = "JellyFinity.app"
+               BlueprintName = "JellyFinity"
+               ReferencedContainer = "container:JellyFinity.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -32,10 +32,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "8B575E202E5E364875B6E056"
-            BuildableName = "Jellyfin Lite.app"
-            BlueprintName = "Jellyfin Lite"
-            ReferencedContainer = "container:Jellyfin Lite.xcodeproj">
+            BlueprintIdentifier = "29886D529B7728D6180FE6FC"
+            BuildableName = "JellyFinity.app"
+            BlueprintName = "JellyFinity"
+            ReferencedContainer = "container:JellyFinity.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <Testables>
@@ -55,10 +55,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "8B575E202E5E364875B6E056"
-            BuildableName = "Jellyfin Lite.app"
-            BlueprintName = "Jellyfin Lite"
-            ReferencedContainer = "container:Jellyfin Lite.xcodeproj">
+            BlueprintIdentifier = "29886D529B7728D6180FE6FC"
+            BuildableName = "JellyFinity.app"
+            BlueprintName = "JellyFinity"
+            ReferencedContainer = "container:JellyFinity.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <CommandLineArguments>
@@ -74,10 +74,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "8B575E202E5E364875B6E056"
-            BuildableName = "Jellyfin Lite.app"
-            BlueprintName = "Jellyfin Lite"
-            ReferencedContainer = "container:Jellyfin Lite.xcodeproj">
+            BlueprintIdentifier = "29886D529B7728D6180FE6FC"
+            BuildableName = "JellyFinity.app"
+            BlueprintName = "JellyFinity"
+            ReferencedContainer = "container:JellyFinity.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

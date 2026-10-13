@@ -27,12 +27,35 @@ extension SessionStore {
 
     /// Loads the full record (overview, genres, logo) for an item shown in a detail page.
     func fetchDetail(_ item: MediaItem) async -> MediaItem {
+        if isDemo, item.isVideo, item.cast.isEmpty {
+            var demo = item
+            demo.cast = CastMember.demo
+            return demo
+        }
         guard let (client, userId) = try? requireClient() else { return item }
         guard var full = try? await client.detail(userId: userId, itemId: item.id) else { return item }
         if full.primaryImageURL == nil { full.primaryImageURL = item.primaryImageURL }
         if full.backdropImageURL == nil { full.backdropImageURL = item.backdropImageURL }
         if full.logoImageURL == nil { full.logoImageURL = item.logoImageURL }
         return full
+    }
+
+    /// The title you watched most recently in a movies or shows library, for the cinematic header.
+    func fetchLastWatched(kind: LibraryKind) async -> MediaItem? {
+        guard kind == .movies || kind == .shows else { return nil }
+        if isDemo {
+            guard var first = SampleData.items(for: kind).first else { return nil }
+            first.hasWatchHistory = true
+            return first
+        }
+        guard let (client, userId) = try? requireClient() else { return nil }
+        let types = kind == .movies ? "Movie" : "Episode"
+        return try? await client.lastWatched(userId: userId, types: types)
+    }
+
+    func fetchVideoTracks(itemId: String) async -> MediaTracks {
+        guard let (client, userId) = try? requireClient() else { return .empty }
+        return (try? await client.mediaTracks(userId: userId, itemId: itemId)) ?? .empty
     }
 
     func fetchSeasons(of series: MediaItem) async throws -> [MediaItem] {

@@ -9,6 +9,9 @@ import SwiftUI
 final class VideoPlayerModel {
     private(set) var player: AVPlayer?
     private(set) var errorMessage: String?
+    private(set) var tracks = MediaTracks.empty
+    private(set) var audioIndex: Int?
+    private(set) var subtitleIndex: Int?
 
     @ObservationIgnored private var client: JellyfinClient?
     @ObservationIgnored private var itemId = ""
@@ -63,6 +66,41 @@ final class VideoPlayerModel {
         self.player = nil
     }
 
+    // MARK: - Audio & subtitle tracks
+
+    func loadTracks(store: SessionStore) async {
+        guard client != nil, !itemId.isEmpty else { return }
+        let loaded = await store.fetchVideoTracks(itemId: itemId)
+        tracks = loaded
+        audioIndex = loaded.defaultAudio?.index
+    }
+
+    func selectAudio(_ index: Int) {
+        guard index != audioIndex else { return }
+        audioIndex = index
+        restartStream()
+    }
+
+    func selectSubtitle(_ index: Int?) {
+        guard index != subtitleIndex else { return }
+        subtitleIndex = index
+        restartStream()
+    }
+
+    /// Asks the server for the same video with the chosen tracks and continues from the current position.
+    private func restartStream() {
+        guard let player, let client else { return }
+        let position = player.currentTime().seconds
+        let wasPlaying = player.timeControlStatus != .paused
+        guard let url = client.videoStreamURL(itemId: itemId, playSessionId: playSessionId,
+                                              audioIndex: audioIndex, subtitleIndex: subtitleIndex) else { return }
+        player.replaceCurrentItem(with: AVPlayerItem(url: url))
+        if position.isFinite, position > 1 {
+            player.seek(to: CMTime(seconds: position, preferredTimescale: 600))
+        }
+        if wasPlaying { player.play() }
+    }
+
     private func tick(_ seconds: Double) {
         guard seconds.isFinite else { return }
         lastPosition = seconds
@@ -91,20 +129,25 @@ struct VideoPlayerScreen: View {
     let item: MediaItem
 
     var body: some View {
-        ZStack(alignment: .topLeading) {
+        ZStack {
             Color.black.ignoresSafeArea()
-            content
-            closeButton
+            VStack(spacing: 0) {
+                topControls
+                content
+            }
         }
         .statusBarHidden(true)
-        .task { model.start(item: item, store: store, audio: audio) }
+        .task {
+            model.start(item: item, store: store, audio: audio)
+            await model.loadTracks(store: store)
+        }
         .onDisappear { model.stop() }
     }
 
     @ViewBuilder
     private var content: some View {
         if let player = model.player {
-            PlayerControllerView(player: player).ignoresSafeArea()
+            PlayerControllerView(player: player).ignoresSafeArea(edges: .bottom)
         } else if let message = model.errorMessage {
             VStack(spacing: 12) {
                 Image(systemName: "exclamationmark.triangle.fill").font(.largeTitle)
@@ -118,6 +161,56 @@ struct VideoPlayerScreen: View {
         }
     }
 
+    private var topControls: some View {
+        HStack(spacing: 12) {
+            closeButton
+            Text(item.name)
+                .font(.headline)
+                .foregroundStyle(.white)
+                .lineLimit(1)
+                .frame(maxWidth: .infinity)
+            if model.tracks.isEmpty {
+                Color.clear.frame(width: 40, height: 40)
+            } else {
+                tracksMenu
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+        .background(Color.black)
+    }
+
+    private var tracksMenu: some View {
+        let audioBinding = Binding<Int>(
+            get: { model.audioIndex ?? -1 },
+            set: { model.selectAudio($0) })
+        let subtitleBinding = Binding<Int>(
+            get: { model.subtitleIndex ?? -1 },
+            set: { model.selectSubtitle($0 < 0 ? nil : $0) })
+        return Menu {
+            if model.tracks.audio.count > 1 {
+                Picker("Audio", selection: audioBinding) {
+                    ForEach(model.tracks.audio) { Text($0.title).tag($0.index) }
+                }
+                .pickerStyle(.inline)
+            }
+            if !model.tracks.subtitles.isEmpty {
+                Picker("Subtitles", selection: subtitleBinding) {
+                    Text("Off").tag(-1)
+                    ForEach(model.tracks.subtitles) { Text($0.title).tag($0.index) }
+                }
+                .pickerStyle(.inline)
+            }
+        } label: {
+            Image(systemName: model.subtitleIndex == nil ? "captions.bubble" : "captions.bubble.fill")
+                .font(.headline)
+                .foregroundStyle(.white)
+                .frame(width: 40, height: 40)
+                .background(.black.opacity(0.45), in: Circle())
+        }
+        .accessibilityLabel("Audio and subtitles")
+    }
+
     private var closeButton: some View {
         Button {
             dismiss()
@@ -128,8 +221,6 @@ struct VideoPlayerScreen: View {
                 .frame(width: 40, height: 40)
                 .background(.black.opacity(0.45), in: Circle())
         }
-        .padding(.leading, 16)
-        .padding(.top, 8)
         .accessibilityLabel("Close player")
     }
 }

@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct JellyfinLiteApp: App {
+struct JellyFinityApp: App {
     @State private var session = SessionStore()
     @State private var audio = AudioPlayer()
     @AppStorage("jl.theme") private var themeRaw = AppTheme.aurora.rawValue

@@ -61,14 +61,48 @@ extension JellyfinClient {
         ]).items
     }
 
+    /// The most recently watched title of a kind (movie or episode), or nil if nothing was played yet.
+    func lastWatched(userId: String, types: String) async throws -> MediaItem? {
+        let result = try await page(path: "Items", query: [
+            .init(name: "userId", value: userId), .init(name: "IncludeItemTypes", value: types),
+            .init(name: "Recursive", value: "true"), .init(name: "SortBy", value: "DatePlayed"),
+            .init(name: "SortOrder", value: "Descending"), .init(name: "Limit", value: "1"),
+            .init(name: "Fields", value: "Genres,Overview")
+        ])
+        return result.items.first(where: \.hasWatchHistory)
+    }
+
+    func mediaTracks(userId: String, itemId: String) async throws -> MediaTracks {
+        let data = try await send("Users/\(userId)/Items/\(itemId)")
+        let streams = try decode(ItemDTO.self, from: data).mediaStreams ?? []
+        var tracks = MediaTracks()
+        for stream in streams {
+            let fallback = stream.language?.uppercased() ?? "Track \(stream.index)"
+            let title = stream.displayTitle ?? stream.title ?? fallback
+            switch stream.type {
+            case "Audio":
+                tracks.audio.append(MediaTrack(index: stream.index, kind: .audio, title: title,
+                                               isDefault: stream.isDefault ?? false))
+            case "Subtitle":
+                tracks.subtitles.append(MediaTrack(index: stream.index, kind: .subtitle, title: title,
+                                                   isDefault: stream.isDefault ?? false))
+            default:
+                break
+            }
+        }
+        return tracks
+    }
+
     // MARK: - Streaming
 
     /// HLS stream that the server remuxes or transcodes into something AVPlayer can play.
-    func videoStreamURL(itemId: String, playSessionId: String) -> URL? {
+    /// A chosen subtitle is burned into the picture so it works for every subtitle format.
+    func videoStreamURL(itemId: String, playSessionId: String,
+                        audioIndex: Int? = nil, subtitleIndex: Int? = nil) -> URL? {
         guard let token else { return nil }
         var comps = URLComponents(url: baseURL.appendingPathComponent("Videos/\(itemId)/master.m3u8"),
                                   resolvingAgainstBaseURL: false)
-        comps?.queryItems = [
+        var query: [URLQueryItem] = [
             .init(name: "MediaSourceId", value: itemId), .init(name: "DeviceId", value: deviceId),
             .init(name: "PlaySessionId", value: playSessionId), .init(name: "api_key", value: token),
             .init(name: "VideoCodec", value: "h264,hevc"), .init(name: "AudioCodec", value: "aac,ac3,eac3"),
@@ -77,6 +111,12 @@ extension JellyfinClient {
             .init(name: "BreakOnNonKeyFrames", value: "true"),
             .init(name: "MaxStreamingBitrate", value: "40000000")
         ]
+        if let audioIndex { query.append(.init(name: "AudioStreamIndex", value: String(audioIndex))) }
+        if let subtitleIndex {
+            query.append(.init(name: "SubtitleStreamIndex", value: String(subtitleIndex)))
+            query.append(.init(name: "SubtitleMethod", value: "Encode"))
+        }
+        comps?.queryItems = query
         return comps?.url
     }
 

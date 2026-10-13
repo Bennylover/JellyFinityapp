@@ -38,9 +38,36 @@ struct ItemDTO: Decodable, Sendable {
     struct UserData: Decodable, Sendable {
         let playedPercentage: Double?
         let playbackPositionTicks: Int64?
+        let lastPlayedDate: String?
         enum CodingKeys: String, CodingKey {
             case playedPercentage = "PlayedPercentage"
             case playbackPositionTicks = "PlaybackPositionTicks"
+            case lastPlayedDate = "LastPlayedDate"
+        }
+    }
+
+    struct MediaStream: Decodable, Sendable {
+        let index: Int
+        let type: String?
+        let displayTitle: String?
+        let title: String?
+        let language: String?
+        let codec: String?
+        let isDefault: Bool?
+        enum CodingKeys: String, CodingKey {
+            case index = "Index", type = "Type", displayTitle = "DisplayTitle", title = "Title"
+            case language = "Language", codec = "Codec", isDefault = "IsDefault"
+        }
+    }
+
+    struct Person: Decodable, Sendable {
+        let id: String
+        let name: String?
+        let role: String?
+        let type: String?
+        let primaryImageTag: String?
+        enum CodingKeys: String, CodingKey {
+            case id = "Id", name = "Name", role = "Role", type = "Type", primaryImageTag = "PrimaryImageTag"
         }
     }
 
@@ -48,6 +75,8 @@ struct ItemDTO: Decodable, Sendable {
     let name: String?
     let type: String?
     let productionYear: Int?
+    let people: [Person]?
+    let providerIds: [String: String?]?
     let runTimeTicks: Int64?
     let communityRating: Double?
     let officialRating: String?
@@ -66,8 +95,10 @@ struct ItemDTO: Decodable, Sendable {
     let albumId: String?
     let albumPrimaryImageTag: String?
     let artists: [String]?
+    let mediaStreams: [MediaStream]?
 
     enum CodingKeys: String, CodingKey {
+        case mediaStreams = "MediaStreams", people = "People", providerIds = "ProviderIds"
         case id = "Id", name = "Name", type = "Type", productionYear = "ProductionYear"
         case runTimeTicks = "RunTimeTicks", communityRating = "CommunityRating"
         case officialRating = "OfficialRating", genres = "Genres", overview = "Overview"

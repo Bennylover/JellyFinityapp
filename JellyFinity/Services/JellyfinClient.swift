@@ -149,12 +149,24 @@ struct JellyfinClient: Sendable {
             indexNumber: dto.indexNumber,
             parentIndexNumber: dto.parentIndexNumber,
             durationSeconds: dto.runTimeTicks.map { Double($0) / 10_000_000 },
-            resumeSeconds: (position ?? 0) > 0 ? position : nil
+            resumeSeconds: (position ?? 0) > 0 ? position : nil,
+            hasWatchHistory: dto.userData?.lastPlayedDate != nil,
+            cast: castMembers(from: dto),
+            imdbId: (dto.providerIds?["Imdb"] ?? nil).flatMap { $0.hasPrefix("tt") ? $0 : nil }
         )
     }
 
+    private func castMembers(from dto: ItemDTO) -> [CastMember] {
+        (dto.people ?? []).compactMap { person in
+            guard let name = person.name, !name.isEmpty else { return nil }
+            let portrait = person.primaryImageTag == nil ? nil : imageURL(person.id, type: "Primary", maxWidth: 300)
+            return CastMember(typeName: person.type, id: person.id, name: name,
+                              character: person.role, imageURL: portrait)
+        }
+    }
+
     private var authorizationHeader: String {
-        var header = "MediaBrowser Client=\"Jellyfin Lite\", Device=\"iPhone\", DeviceId=\"\(deviceId)\", Version=\"1.0\""
+        var header = "MediaBrowser Client=\"JellyFinity\", Device=\"iPhone\", DeviceId=\"\(deviceId)\", Version=\"1.0\""
         if let token { header += ", Token=\"\(token)\"" }
         return header
     }

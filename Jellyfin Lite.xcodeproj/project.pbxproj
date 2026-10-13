@@ -1,0 +1,328 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0A730723C9EBEC1B4319AF75 /* ArtworkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44177F1BD0CAD7F0BF71623 /* ArtworkView.swift */; };
+		1CBE20410F48EA54CDB70DB2 /* ConnectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E4F35D00D25947655FB2BBE /* ConnectView.swift */; };
+		1E968E89D300FBCBB3146327 /* SampleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6086417FF147B5A0911A60B /* SampleData.swift */; };
+		354EB2BEFD2D3772E2791C3C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BE974F04DAC0D211CB2BB64B /* Assets.xcassets */; };
+		39A3FE37621989B2AA55D2D9 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC109663DAEC401018C1F86C /* KeychainStore.swift */; };
+		5C3CE848D2655258E4129093 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 753610FE08C5256887B24D88 /* SettingsView.swift */; };
+		7219BE0C0A45466C79D14267 /* HomeCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BFFB3088AA69EE73C28D0FF /* HomeCards.swift */; };
+		86C8BDD180E9DCFECB5EA566 /* MediaDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EC8E4E6BB3B1A81A2DF3304 /* MediaDetailView.swift */; };
+		9EBE7F524A48C038B0440118 /* LibraryMixCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7513C6C41ADD5294572985D0 /* LibraryMixCard.swift */; };
+		A425314DD9C206D703078F46 /* JellyfinLiteApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1F55CA0379057246D23C4D5 /* JellyfinLiteApp.swift */; };
+		A4C848D3325BA8E7BE381BE3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6853BDE9E3F81BD7544D2C1A /* LaunchScreen.storyboard */; };
+		AC834791AD5C9F959B2CFA38 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268A7902997BF54A62EFE47B /* Theme.swift */; };
+		BC8008B54D29D70E0ECB9E3B /* PlaceholderTabs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 509FAC6D14CF003092EEBD7D /* PlaceholderTabs.swift */; };
+		C088A6A4B33EF6F117F921D4 /* MediaItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E57BEC6DE00F35036D2D1E1 /* MediaItem.swift */; };
+		C0D29093051D49F8C40099A1 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF307B828D3191B2B903423 /* HomeView.swift */; };
+		DF2DB99039CE78D86B5C4E18 /* JellyfinClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 568C0E25EA8A2088777D80E1 /* JellyfinClient.swift */; };
+		E1E617CC818599286585C17B /* SessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 142F5FBFB8DEEAD4140B5634 /* SessionStore.swift */; };
+		FBA82E4A16ABFE80EBABCF13 /* JellyfinDTOs.swift in Sources */ = {isa = PBXBuildFile; fileRef = F02B8AE5AA2A933C11FE7DAB /* JellyfinDTOs.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		142F5FBFB8DEEAD4140B5634 /* SessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStore.swift; sourceTree = "<group>"; };
+		268A7902997BF54A62EFE47B /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		2BFFB3088AA69EE73C28D0FF /* HomeCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeCards.swift; sourceTree = "<group>"; };
+		397D1C47F637B701A2ECCA2B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		509FAC6D14CF003092EEBD7D /* PlaceholderTabs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceholderTabs.swift; sourceTree = "<group>"; };
+		568C0E25EA8A2088777D80E1 /* JellyfinClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JellyfinClient.swift; sourceTree = "<group>"; };
+		6EC8E4E6BB3B1A81A2DF3304 /* MediaDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaDetailView.swift; sourceTree = "<group>"; };
+		7513C6C41ADD5294572985D0 /* LibraryMixCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryMixCard.swift; sourceTree = "<group>"; };
+		753610FE08C5256887B24D88 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		8A80D885E3942CB4550F353C /* Jellyfin Lite.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "Jellyfin Lite.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		8E57BEC6DE00F35036D2D1E1 /* MediaItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaItem.swift; sourceTree = "<group>"; };
+		9E4F35D00D25947655FB2BBE /* ConnectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectView.swift; sourceTree = "<group>"; };
+		BE974F04DAC0D211CB2BB64B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		CC109663DAEC401018C1F86C /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
+		CEF307B828D3191B2B903423 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		D6086417FF147B5A0911A60B /* SampleData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleData.swift; sourceTree = "<group>"; };
+		E1F55CA0379057246D23C4D5 /* JellyfinLiteApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JellyfinLiteApp.swift; sourceTree = "<group>"; };
+		E3D41D9572F483AC8D854C7E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		E44177F1BD0CAD7F0BF71623 /* ArtworkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkView.swift; sourceTree = "<group>"; };
+		F02B8AE5AA2A933C11FE7DAB /* JellyfinDTOs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JellyfinDTOs.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		2470FFA2A1965128F5B5E2A2 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				568C0E25EA8A2088777D80E1 /* JellyfinClient.swift */,
+				F02B8AE5AA2A933C11FE7DAB /* JellyfinDTOs.swift */,
+				CC109663DAEC401018C1F86C /* KeychainStore.swift */,
+				142F5FBFB8DEEAD4140B5634 /* SessionStore.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		280B1CAFF81D9D08BBEC6EB3 /* Connect */ = {
+			isa = PBXGroup;
+			children = (
+				9E4F35D00D25947655FB2BBE /* ConnectView.swift */,
+			);
+			path = Connect;
+			sourceTree = "<group>";
+		};
+		5096A3FE3F60436E069D71CF /* Jellyfin Lite */ = {
+			isa = PBXGroup;
+			children = (
+				BE974F04DAC0D211CB2BB64B /* Assets.xcassets */,
+				E3D41D9572F483AC8D854C7E /* Info.plist */,
+				E1F55CA0379057246D23C4D5 /* JellyfinLiteApp.swift */,
+				6853BDE9E3F81BD7544D2C1A /* LaunchScreen.storyboard */,
+				9CAA85ED90B047D3B4AB229B /* Models */,
+				2470FFA2A1965128F5B5E2A2 /* Services */,
+				6843D8AD090F521A829D3CAE /* Theme */,
+				7FC9CC50758D715ED5A80A8D /* Views */,
+			);
+			path = "Jellyfin Lite";
+			sourceTree = "<group>";
+		};
+		6843D8AD090F521A829D3CAE /* Theme */ = {
+			isa = PBXGroup;
+			children = (
+				268A7902997BF54A62EFE47B /* Theme.swift */,
+			);
+			path = Theme;
+			sourceTree = "<group>";
+		};
+		7EA8B2579D31640BD704D66D = {
+			isa = PBXGroup;
+			children = (
+				5096A3FE3F60436E069D71CF /* Jellyfin Lite */,
+				8C44D586B8B38F6D54EA6645 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		7F61691B0E0A9FA500DE4BEF /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				E44177F1BD0CAD7F0BF71623 /* ArtworkView.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		7FC9CC50758D715ED5A80A8D /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				6EC8E4E6BB3B1A81A2DF3304 /* MediaDetailView.swift */,
+				509FAC6D14CF003092EEBD7D /* PlaceholderTabs.swift */,
+				753610FE08C5256887B24D88 /* SettingsView.swift */,
+				7F61691B0E0A9FA500DE4BEF /* Components */,
+				280B1CAFF81D9D08BBEC6EB3 /* Connect */,
+				9F48B40F97E9FD69969C00E6 /* Home */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		8C44D586B8B38F6D54EA6645 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8A80D885E3942CB4550F353C /* Jellyfin Lite.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		9CAA85ED90B047D3B4AB229B /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				8E57BEC6DE00F35036D2D1E1 /* MediaItem.swift */,
+				D6086417FF147B5A0911A60B /* SampleData.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		9F48B40F97E9FD69969C00E6 /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				2BFFB3088AA69EE73C28D0FF /* HomeCards.swift */,
+				CEF307B828D3191B2B903423 /* HomeView.swift */,
+				7513C6C41ADD5294572985D0 /* LibraryMixCard.swift */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8B575E202E5E364875B6E056 /* Jellyfin Lite */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8EE5E0505CE5FB21E116AA99 /* Build configuration list for PBXNativeTarget "Jellyfin Lite" */;
+			buildPhases = (
+				12ADA8084C535399A1EE24B8 /* Sources */,
+				5222109CB44B08A0B8D36D75 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Jellyfin Lite";
+			packageProductDependencies = (
+			);
+			productName = "Jellyfin Lite";
+			productReference = 8A80D885E3942CB4550F353C /* Jellyfin Lite.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		FD4BA4436CDBED7FBAE4526E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+			};
+			buildConfigurationList = C6D261ADEAD2BAD8756ADF39 /* Build configuration list for PBXProject "Jellyfin Lite" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 7EA8B2579D31640BD704D66D;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8B575E202E5E364875B6E056 /* Jellyfin Lite */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		5222109CB44B08A0B8D36D75 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				354EB2BEFD2D3772E2791C3C /* Assets.xcassets in Resources */,
+				A4C848D3325BA8E7BE381BE3 /* LaunchScreen.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		12ADA8084C535399A1EE24B8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0A730723C9EBEC1B4319AF75 /* ArtworkView.swift in Sources */,
+				1CBE20410F48EA54CDB70DB2 /* ConnectView.swift in Sources */,
+				7219BE0C0A45466C79D14267 /* HomeCards.swift in Sources */,
+				C0D29093051D49F8C40099A1 /* HomeView.swift in Sources */,
+				DF2DB99039CE78D86B5C4E18 /* JellyfinClient.swift in Sources */,
+				FBA82E4A16ABFE80EBABCF13 /* JellyfinDTOs.swift in Sources */,
+				A425314DD9C206D703078F46 /* JellyfinLiteApp.swift in Sources */,
+				39A3FE37621989B2AA55D2D9 /* KeychainStore.swift in Sources */,
+				9EBE7F524A48C038B0440118 /* LibraryMixCard.swift in Sources */,
+				86C8BDD180E9DCFECB5EA566 /* MediaDetailView.swift in Sources */,
+				C088A6A4B33EF6F117F921D4 /* MediaItem.swift in Sources */,
+				BC8008B54D29D70E0ECB9E3B /* PlaceholderTabs.swift in Sources */,
+				1E968E89D300FBCBB3146327 /* SampleData.swift in Sources */,
+				E1E617CC818599286585C17B /* SessionStore.swift in Sources */,
+				5C3CE848D2655258E4129093 /* SettingsView.swift in Sources */,
+				AC834791AD5C9F959B2CFA38 /* Theme.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		6853BDE9E3F81BD7544D2C1A /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				397D1C47F637B701A2ECCA2B /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		191DFA89273E2AA4C7645FA6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = "Jellyfin Lite/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.superapp.jellyfinlite;
+			};
+			name = Release;
+		};
+		5F66736D3ABF9E061271C358 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_NS_ASSERTIONS = NO;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_NAME = "Jellyfin Lite";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		6A0C04680044263AD4306FC6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = "Jellyfin Lite/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.superapp.jellyfinlite;
+			};
+			name = Debug;
+		};
+		BE20F296ED33609C3142DC8E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CURRENT_PROJECT_VERSION = 1;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_NAME = "Jellyfin Lite";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		8EE5E0505CE5FB21E116AA99 /* Build configuration list for PBXNativeTarget "Jellyfin Lite" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6A0C04680044263AD4306FC6 /* Debug */,
+				191DFA89273E2AA4C7645FA6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		C6D261ADEAD2BAD8756ADF39 /* Build configuration list for PBXProject "Jellyfin Lite" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BE20F296ED33609C3142DC8E /* Debug */,
+				5F66736D3ABF9E061271C358 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = FD4BA4436CDBED7FBAE4526E /* Project object */;
+}

@@ -21,9 +21,50 @@ extension JellyfinClient {
             .init(name: "Recursive", value: "true"), .init(name: "SortBy", value: "ProductionYear,SortName"),
             .init(name: "SortOrder", value: "Descending"), .init(name: "Fields", value: "Genres")
         ]
-        let primary = try await items(query: base + [.init(name: "AlbumArtists", value: artist)])
-        if !primary.isEmpty { return primary }
-        return try await items(query: base + [.init(name: "Artists", value: artist)])
+        let wanted = Self.normalized(artist)
+        if let artistId = try? await artistId(named: artist, userId: userId) {
+            let primary = try await items(query: base + [.init(name: "AlbumArtistIds", value: artistId)])
+            let ownAlbums = primary.filter { Self.album($0, matches: wanted) }
+            if !ownAlbums.isEmpty { return ownAlbums }
+            // An empty result means the server honoured the id filter, so "appears on" albums can be trusted.
+            if primary.isEmpty {
+                let appearsOn = try await items(query: base + [.init(name: "ArtistIds", value: artistId)])
+                if !appearsOn.isEmpty { return appearsOn }
+            }
+        }
+        // Last resort: search by name and keep only albums whose artist really matches.
+        let searched = try await items(query: base + [.init(name: "searchTerm", value: artist), .init(name: "Limit", value: "200")])
+        let byName = try await items(query: base + [.init(name: "AlbumArtists", value: artist)])
+        var seen = Set<String>()
+        return (byName + searched).filter { Self.album($0, matches: wanted) && seen.insert($0.id).inserted }
+    }
+
+    /// Finds the server id of an artist by exact (case-insensitive) name.
+    private func artistId(named artist: String, userId: String) async throws -> String? {
+        let wanted = Self.normalized(artist)
+        let query: [URLQueryItem] = [
+            .init(name: "userId", value: userId), .init(name: "searchTerm", value: artist), .init(name: "Limit", value: "25")
+        ]
+        let found = try await page(path: "Artists", query: query).items
+        if let exact = found.first(where: { Self.normalized($0.name) == wanted }) { return exact.id }
+        let albumArtists = try await page(path: "Artists/AlbumArtists", query: query).items
+        return albumArtists.first(where: { Self.normalized($0.name) == wanted })?.id
+    }
+
+    private static func normalized(_ text: String) -> String {
+        text.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: nil)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    /// True when the album's artist line names this artist (handles "A, B" and "A feat. B").
+    private static func album(_ album: MediaItem, matches wanted: String) -> Bool {
+        guard let line = album.subtitle else { return false }
+        let full = normalized(line)
+        if full == wanted { return true }
+        let parts = full.components(separatedBy: CharacterSet(charactersIn: ",;&/")).map {
+            $0.trimmingCharacters(in: .whitespaces)
+        }
+        return parts.contains(wanted) || full.hasPrefix(wanted + " feat")
     }
 
     // MARK: - Converted downloads

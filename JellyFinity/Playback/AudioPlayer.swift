@@ -37,6 +37,7 @@ final class AudioPlayer {
     @ObservationIgnored private var lastReport = Date.distantPast
     @ObservationIgnored private var artwork: MPMediaItemArtwork?
     @ObservationIgnored private var artworkTask: Task<Void, Never>?
+    @ObservationIgnored private var interruptionObserver: NSObjectProtocol?
 
     init() {
         player.automaticallyWaitsToMinimizeStalling = true
@@ -119,6 +120,8 @@ final class AudioPlayer {
         currentTime = 0
         duration = 0
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
+        MPNowPlayingInfoCenter.default().playbackState = .stopped
+        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
     }
 
     func setSleepTimer(minutes: Int?) {
@@ -237,11 +240,27 @@ final class AudioPlayer {
             MPMediaItemPropertyTitle: item.name,
             MPMediaItemPropertyPlaybackDuration: duration,
             MPNowPlayingInfoPropertyElapsedPlaybackTime: currentTime,
-            MPNowPlayingInfoPropertyPlaybackRate: isPlaying ? Double(rate) : 0.0
+            MPNowPlayingInfoPropertyPlaybackRate: isPlaying ? Double(rate) : 0.0,
+            MPNowPlayingInfoPropertyDefaultPlaybackRate: Double(rate),
+            MPNowPlayingInfoPropertyMediaType: MPNowPlayingInfoMediaType.audio.rawValue,
+            MPNowPlayingInfoPropertyPlaybackQueueIndex: index,
+            MPNowPlayingInfoPropertyPlaybackQueueCount: queue.count
         ]
         if let artist = item.subtitle { info[MPMediaItemPropertyArtist] = artist }
         if let artwork { info[MPMediaItemPropertyArtwork] = artwork }
-        MPNowPlayingInfoCenter.default().nowPlayingInfo = info
+        let center = MPNowPlayingInfoCenter.default()
+        center.nowPlayingInfo = info
+        center.playbackState = isPlaying ? .playing : .paused
+        updateCommandAvailability(isBook: item.kind == .audiobook)
+    }
+
+    /// Shows track skipping for music and 15/30 s jumps for audiobooks in the Dynamic Island and Lock Screen.
+    private func updateCommandAvailability(isBook: Bool) {
+        let commands = MPRemoteCommandCenter.shared()
+        commands.nextTrackCommand.isEnabled = !isBook && hasNext
+        commands.previousTrackCommand.isEnabled = !isBook
+        commands.skipForwardCommand.isEnabled = isBook
+        commands.skipBackwardCommand.isEnabled = isBook
     }
 
     private func loadArtwork(for item: MediaItem) {
@@ -288,6 +307,35 @@ final class AudioPlayer {
             let position = event.positionTime
             Task { @MainActor in self?.seek(to: position) }
             return .success
+        }
+        center.skipForwardCommand.preferredIntervals = [30]
+        center.skipBackwardCommand.preferredIntervals = [15]
+        center.skipForwardCommand.addTarget { [weak self] _ in
+            Task { @MainActor in self?.skip(by: 30) }
+            return .success
+        }
+        center.skipBackwardCommand.addTarget { [weak self] _ in
+            Task { @MainActor in self?.skip(by: -15) }
+            return .success
+        }
+        interruptionObserver = NotificationCenter.default.addObserver(
+            forName: AVAudioSession.interruptionNotification, object: nil, queue: .main
+        ) { [weak self] note in
+            let raw = note.userInfo?[AVAudioSessionInterruptionTypeKey] as? UInt
+            let optionsRaw = note.userInfo?[AVAudioSessionInterruptionOptionKey] as? UInt ?? 0
+            MainActor.assumeIsolated { self?.handleInterruption(typeRaw: raw, optionsRaw: optionsRaw) }
+        }
+    }
+
+    /// Resumes after a phone call or Siri if the system says it's appropriate.
+    private func handleInterruption(typeRaw: UInt?, optionsRaw: UInt) {
+        guard let typeRaw, let type = AVAudioSession.InterruptionType(rawValue: typeRaw) else { return }
+        if type == .ended, AVAudioSession.InterruptionOptions(rawValue: optionsRaw).contains(.shouldResume),
+           current != nil {
+            activateSession()
+            resume()
+        } else {
+            updateNowPlaying()
         }
     }
 }

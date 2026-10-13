@@ -28,6 +28,9 @@ Prefer native Apple-like UI. Avoid web-dashboard-style components unless explici
 
 - Download conversion: iPhone can't transcode MKV itself; `JellyfinClient.downloadPlan` probes container/codecs and, if not AVPlayer-friendly, asks the server for `Videos/{id}/stream.mp4` (h264/aac) or `Audio/{id}/stream.mp3`. Toggle `jl.convertDownloads` (Settings, default on). Progress uses `countOfBytesClientExpectsToReceive` estimate.
 - Artist page: `ArtistRoute` → `ArtistAlbumsView`, linked from album detail artist name (destination registered in LibraryView and HomeView).
+- Artist albums: resolve artist id via `/Artists?searchTerm` (then `/Artists/AlbumArtists`), query `AlbumArtistIds`, verify album artist name in-app (servers may ignore name filters).
+- Splash: `SplashView` overlay in `RootView` (~1.4 s, Reduce Motion aware); session restores underneath.
+- Dynamic Island: uses system Now Playing (MPNowPlayingInfoCenter + remote commands + background audio), not a custom Live Activity (would duplicate system UI). Audiobooks get 15/30 s skips.
 
 ## Pitfalls
 

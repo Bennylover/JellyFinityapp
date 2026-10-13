@@ -29,8 +29,20 @@ struct JellyFinityApp: App {
 
 struct RootView: View {
     @Environment(SessionStore.self) private var session
+    @State private var showSplash = true
 
     var body: some View {
+        ZStack {
+            content
+            if showSplash {
+                SplashView { withAnimation(.easeInOut(duration: 0.45)) { showSplash = false } }
+                    .transition(.opacity)
+                    .zIndex(1)
+            }
+        }
+    }
+
+    private var content: some View {
         Group {
             if session.phase == .signedOut {
                 ConnectView()

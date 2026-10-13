@@ -36,15 +36,13 @@ struct ConnectView: View {
 
     private var brand: some View {
         VStack(spacing: 14) {
-            RoundedRectangle(cornerRadius: 26, style: .continuous)
-                .fill(theme.gradient)
-                .frame(width: 92, height: 92)
-                .overlay {
-                    Image(systemName: "play.fill")
-                        .font(.system(size: 38, weight: .bold))
-                        .foregroundStyle(.white)
-                }
-                .shadow(color: theme.accent.opacity(0.45), radius: 24, y: 12)
+            Image("JellyLogo")
+                .resizable()
+                .scaledToFill()
+                .frame(width: 104, height: 104)
+                .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+                .shadow(color: Color.blue.opacity(0.45), radius: 24, y: 12)
+                .accessibilityHidden(true)
             Text("JellyFinity")
                 .font(.largeTitle.weight(.bold))
             Text("Movies, music and audiobooks —\nbeautifully yours.")

@@ -172,6 +172,13 @@ struct JellyfinClient: Sendable {
         return header
     }
 
+    /// Request for the original media file; the token travels in a header, not the URL.
+    func downloadRequest(itemId: String) -> URLRequest {
+        var request = URLRequest(url: baseURL.appendingPathComponent("Items/\(itemId)/Download"))
+        request.setValue(authorizationHeader, forHTTPHeaderField: "Authorization")
+        return request
+    }
+
     func send(_ path: String, query: [URLQueryItem] = [], method: String = "GET", body: Data? = nil) async throws -> Data {
         guard var comps = URLComponents(url: baseURL.appendingPathComponent(path), resolvingAgainstBaseURL: false) else {
             throw ClientError.invalidAddress

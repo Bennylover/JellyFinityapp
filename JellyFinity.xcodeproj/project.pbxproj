@@ -29,11 +29,16 @@
 		95AFBD1B7071B59ACD99B766 /* SampleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 383E92E52036AA9C456F1DBC /* SampleData.swift */; };
 		A120469AB5534631FED7BA09 /* NowPlayingViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350CE045C9C8D696250E3861 /* NowPlayingViews.swift */; };
 		ACAC3E36938CA8951CB5640E /* ConnectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99A1ABABE07EDF9A2835A45 /* ConnectView.swift */; };
+		B42DD091B7E7B5C77CE049E2 /* DownloadSessionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55847D031E59549838139B81 /* DownloadSessionDelegate.swift */; };
 		BBF260BA566607F385DE9977 /* TMDBKeySection.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFBD1D74EB7CFB13882A429D /* TMDBKeySection.swift */; };
+		BCD8C668D7860D56DE54DDDF /* DownloadButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10AE1F861FAE7E0760363DAB /* DownloadButtons.swift */; };
 		BF28EE171129F70C5C46362F /* SessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1888870774B17F886EB88BBE /* SessionStore.swift */; };
 		C07F7F1C428852FE8AA2581B /* MediaTrack.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7BA10942D686DCEDCD5BC6 /* MediaTrack.swift */; };
+		C2CF3D8AF5D24E03CA1165FB /* DownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC6E49F11E2EADD0A46BE74A /* DownloadManager.swift */; };
 		CC1AD568A085045A44A99C68 /* JellyfinClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7C1BC6453C2D4B32DBF97F0 /* JellyfinClient.swift */; };
 		D5718E757D1059162866CD19 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94DB1839CA91D7244F7DAFD0 /* LibraryView.swift */; };
+		D5A4E1BB413E237A69B71800 /* DownloadRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20894D513252AB6086AB69CA /* DownloadRecord.swift */; };
+		DCD4CCCD49453DC3821CAA03 /* DownloadsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39291A8783832977BF89E858 /* DownloadsView.swift */; };
 		DD5329B65EE77B27A7809BBD /* TMDBClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABA11AEF22DFEA84045E5938 /* TMDBClient.swift */; };
 		DF72BF6EAD3ED2D7BE4C7617 /* MediaDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E100D6AA18BE24D6C3BBD487 /* MediaDetailView.swift */; };
 		E34F4C0A347D222CDBB772BC /* SampleData+Library.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CA9FB0876E7F85724832FFB /* SampleData+Library.swift */; };
@@ -42,18 +47,22 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		10AE1F861FAE7E0760363DAB /* DownloadButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadButtons.swift; sourceTree = "<group>"; };
 		1888870774B17F886EB88BBE /* SessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStore.swift; sourceTree = "<group>"; };
 		1A02271471F036D09F0D24E1 /* SessionStore+Library.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SessionStore+Library.swift"; sourceTree = "<group>"; };
 		1B89FDB27EA962BB32814015 /* MediaItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaItem.swift; sourceTree = "<group>"; };
 		1F3443309D0922AFFE256627 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		20894D513252AB6086AB69CA /* DownloadRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadRecord.swift; sourceTree = "<group>"; };
 		2741948E2B24DE74DF41D6B1 /* JellyfinDTOs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JellyfinDTOs.swift; sourceTree = "<group>"; };
 		2C77C936B49B63749BC7D810 /* CastSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CastSection.swift; sourceTree = "<group>"; };
 		2D5A311C75090DAE73117ABE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2E37E6EE645A73CD5719FB43 /* LibraryMixCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryMixCard.swift; sourceTree = "<group>"; };
 		350CE045C9C8D696250E3861 /* NowPlayingViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NowPlayingViews.swift; sourceTree = "<group>"; };
 		383E92E52036AA9C456F1DBC /* SampleData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleData.swift; sourceTree = "<group>"; };
+		39291A8783832977BF89E858 /* DownloadsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadsView.swift; sourceTree = "<group>"; };
 		3D692FA7F0778DD062237B49 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
 		47C1C1E9A0CD5CE88414D95D /* IMDbClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IMDbClient.swift; sourceTree = "<group>"; };
+		55847D031E59549838139B81 /* DownloadSessionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadSessionDelegate.swift; sourceTree = "<group>"; };
 		57288B9F8C703027CCE6C764 /* JellyFinityApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JellyFinityApp.swift; sourceTree = "<group>"; };
 		5B5692C561AF9CBB633111A5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6CA9FB0876E7F85724832FFB /* SampleData+Library.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SampleData+Library.swift"; sourceTree = "<group>"; };
@@ -69,6 +78,7 @@
 		C5BB4700BD6DD79E776438EA /* CastMember.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CastMember.swift; sourceTree = "<group>"; };
 		C6EAAC17E5F4FEB720B94E0F /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		C7C1BC6453C2D4B32DBF97F0 /* JellyfinClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JellyfinClient.swift; sourceTree = "<group>"; };
+		CC6E49F11E2EADD0A46BE74A /* DownloadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadManager.swift; sourceTree = "<group>"; };
 		CFBD1D74EB7CFB13882A429D /* TMDBKeySection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TMDBKeySection.swift; sourceTree = "<group>"; };
 		D99A1ABABE07EDF9A2835A45 /* ConnectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectView.swift; sourceTree = "<group>"; };
 		DDD06D9AC3B91531435B74C5 /* MediaDetailSections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaDetailSections.swift; sourceTree = "<group>"; };
@@ -82,6 +92,9 @@
 		0211513414CAB21D4632CD4F /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				CC6E49F11E2EADD0A46BE74A /* DownloadManager.swift */,
+				20894D513252AB6086AB69CA /* DownloadRecord.swift */,
+				55847D031E59549838139B81 /* DownloadSessionDelegate.swift */,
 				47C1C1E9A0CD5CE88414D95D /* IMDbClient.swift */,
 				C7C1BC6453C2D4B32DBF97F0 /* JellyfinClient.swift */,
 				AEF77BB0CB4D50077244392A /* JellyfinClient+Library.swift */,
@@ -116,6 +129,15 @@
 				A9E23BEB0A4BD722876BD721 /* Theme.swift */,
 			);
 			path = Theme;
+			sourceTree = "<group>";
+		};
+		4CA3E4EE5D956B8B3709DAE5 /* Downloads */ = {
+			isa = PBXGroup;
+			children = (
+				10AE1F861FAE7E0760363DAB /* DownloadButtons.swift */,
+				39291A8783832977BF89E858 /* DownloadsView.swift */,
+			);
+			path = Downloads;
 			sourceTree = "<group>";
 		};
 		500BE9DAFF7356C3E3F5FD3D /* Products */ = {
@@ -153,6 +175,7 @@
 				CFBD1D74EB7CFB13882A429D /* TMDBKeySection.swift */,
 				541BB1259E05B43D1996F4AB /* Components */,
 				EB2F316E06D09749DC67E72D /* Connect */,
+				4CA3E4EE5D956B8B3709DAE5 /* Downloads */,
 				EF9BC9B4D7BFB80B476C4A7B /* Home */,
 				670B6DD73BB67BD1C0E2B8E5 /* Library */,
 				C8ACED07CB5809B0BAF55DC5 /* Player */,
@@ -286,6 +309,11 @@
 				F24F70547DCD4B13537E3993 /* CastMember.swift in Sources */,
 				31FE211BE1C06CFC0FA74DCA /* CastSection.swift in Sources */,
 				ACAC3E36938CA8951CB5640E /* ConnectView.swift in Sources */,
+				BCD8C668D7860D56DE54DDDF /* DownloadButtons.swift in Sources */,
+				C2CF3D8AF5D24E03CA1165FB /* DownloadManager.swift in Sources */,
+				D5A4E1BB413E237A69B71800 /* DownloadRecord.swift in Sources */,
+				B42DD091B7E7B5C77CE049E2 /* DownloadSessionDelegate.swift in Sources */,
+				DCD4CCCD49453DC3821CAA03 /* DownloadsView.swift in Sources */,
 				0A31C71122EB039D89EB8083 /* HomeCards.swift in Sources */,
 				6DCC3463FAEB58B4B4E88FE6 /* HomeView.swift in Sources */,
 				03C04B4E003C6C30A5784EC7 /* IMDbClient.swift in Sources */,

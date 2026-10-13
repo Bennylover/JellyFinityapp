@@ -53,6 +53,7 @@ struct LibraryView: View {
     let kind: LibraryKind
     @Environment(SessionStore.self) private var store
     @Environment(\.appTheme) private var theme
+    @Environment(DownloadManager.self) private var downloads
     @State private var model = LibraryModel()
     @State private var search = ""
     @State private var sort: LibrarySort = .recentlyAdded
@@ -152,7 +153,13 @@ struct LibraryView: View {
     }
 
     private var sortMenu: some ToolbarContent {
-        ToolbarItem(placement: .topBarTrailing) {
+        ToolbarItemGroup(placement: .topBarTrailing) {
+            NavigationLink {
+                DownloadsView(kind: kind)
+            } label: {
+                Image(systemName: downloads.records(for: kind).isEmpty ? "arrow.down.circle" : "arrow.down.circle.fill")
+            }
+            .accessibilityLabel("Downloads")
             Menu {
                 Picker("Sort by", selection: $sort) {
                     ForEach(LibrarySort.allCases) { Text($0.label).tag($0) }

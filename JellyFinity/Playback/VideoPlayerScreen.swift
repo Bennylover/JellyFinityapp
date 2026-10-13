@@ -1,5 +1,6 @@
 import AVFoundation
 import AVKit
+import Combine
 import Observation
 import SwiftUI
 
@@ -18,14 +19,35 @@ final class VideoPlayerModel {
     @ObservationIgnored private var playSessionId = UUID().uuidString
     @ObservationIgnored private var timeObserver: Any?
     @ObservationIgnored private var lastReport = Date.distantPast
-    @ObservationIgnored private var lastPosition: Double = 0
+    @ObservationIgnored private(set) var lastPosition: Double = 0
+    @ObservationIgnored private var isLocal = false
+    @ObservationIgnored private var failureWatch: AnyCancellable?
+
+    /// Shows a message when AVPlayer can't handle the file (for example some downloaded containers).
+    private func watchForFailure(of newPlayer: AVPlayer, isLocal: Bool) {
+        guard let playerItem = newPlayer.currentItem else { return }
+        failureWatch = playerItem.publisher(for: \.status)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] status in
+                guard status == .failed else { return }
+                MainActor.assumeIsolated {
+                    self?.errorMessage = isLocal
+                        ? "This download is in a format iPhone can't play. Stream it from your server instead."
+                        : "This video couldn't be played."
+                }
+            }
+    }
 
     func start(item: MediaItem, store: SessionStore, audio: AudioPlayer) {
         guard player == nil else { return }
         audio.pause()
 
         let url: URL?
-        if store.isDemo {
+        if let local = item.localFileURL {
+            isLocal = true
+            self.client = store.client
+            url = local
+        } else if store.isDemo {
             url = SampleData.demoVideoURL
         } else if let client = store.client {
             self.client = client
@@ -44,6 +66,7 @@ final class VideoPlayerModel {
 
         itemId = item.id
         let newPlayer = AVPlayer(url: url)
+        watchForFailure(of: newPlayer, isLocal: isLocal)
         if !store.isDemo, let resume = item.resumeSeconds, resume > 5 {
             newPlayer.seek(to: CMTime(seconds: resume, preferredTimescale: 600))
         }
@@ -69,7 +92,7 @@ final class VideoPlayerModel {
     // MARK: - Audio & subtitle tracks
 
     func loadTracks(store: SessionStore) async {
-        guard client != nil, !itemId.isEmpty else { return }
+        guard client != nil, !isLocal, !itemId.isEmpty else { return }
         let loaded = await store.fetchVideoTracks(itemId: itemId)
         tracks = loaded
         audioIndex = loaded.defaultAudio?.index
@@ -89,7 +112,7 @@ final class VideoPlayerModel {
 
     /// Asks the server for the same video with the chosen tracks and continues from the current position.
     private func restartStream() {
-        guard let player, let client else { return }
+        guard let player, let client, !isLocal else { return }
         let position = player.currentTime().seconds
         let wasPlaying = player.timeControlStatus != .paused
         guard let url = client.videoStreamURL(itemId: itemId, playSessionId: playSessionId,
@@ -124,6 +147,7 @@ final class VideoPlayerModel {
 struct VideoPlayerScreen: View {
     @Environment(SessionStore.self) private var store
     @Environment(AudioPlayer.self) private var audio
+    @Environment(DownloadManager.self) private var downloads
     @Environment(\.dismiss) private var dismiss
     @State private var model = VideoPlayerModel()
     let item: MediaItem
@@ -141,14 +165,15 @@ struct VideoPlayerScreen: View {
             model.start(item: item, store: store, audio: audio)
             await model.loadTracks(store: store)
         }
-        .onDisappear { model.stop() }
+        .onDisappear {
+            model.stop()
+            if item.localFileURL != nil { downloads.saveResume(id: item.id, seconds: model.lastPosition) }
+        }
     }
 
     @ViewBuilder
     private var content: some View {
-        if let player = model.player {
-            PlayerControllerView(player: player).ignoresSafeArea(edges: .bottom)
-        } else if let message = model.errorMessage {
+        if let message = model.errorMessage {
             VStack(spacing: 12) {
                 Image(systemName: "exclamationmark.triangle.fill").font(.largeTitle)
                 Text(message).multilineTextAlignment(.center)
@@ -156,6 +181,8 @@ struct VideoPlayerScreen: View {
             .foregroundStyle(.white)
             .padding(40)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+        } else if let player = model.player {
+            PlayerControllerView(player: player).ignoresSafeArea(edges: .bottom)
         } else {
             ProgressView().tint(.white).frame(maxWidth: .infinity, maxHeight: .infinity)
         }

@@ -30,6 +30,8 @@ struct MediaItem: Identifiable, Hashable, Sendable {
     var tmdbId: String? = nil
     /// Where the cast list came from ("TMDB" or "IMDb"); nil means the Jellyfin server.
     var castSource: String? = nil
+    /// Set for downloaded items: the file on this device that plays without a server.
+    var localFileURL: URL? = nil
     /// "S2 · E4" style label for episodes.
     var episodeLabel: String? {
         guard kind == .episode, let indexNumber else { return nil }

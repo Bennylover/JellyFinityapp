@@ -4,6 +4,7 @@ import SwiftUI
 struct JellyFinityApp: App {
     @State private var session = SessionStore()
     @State private var audio = AudioPlayer()
+    @State private var downloads = DownloadManager()
     @AppStorage("jl.theme") private var themeRaw = AppTheme.aurora.rawValue
     @AppStorage("jl.appearance") private var appearanceRaw = AppearanceMode.system.rawValue
 
@@ -15,6 +16,10 @@ struct JellyFinityApp: App {
             RootView()
                 .environment(session)
                 .environment(audio)
+                .environment(downloads)
+                .onAppear {
+                    audio.onLocalProgress = { id, seconds in downloads.saveResume(id: id, seconds: seconds) }
+                }
                 .environment(\.appTheme, theme)
                 .tint(theme.accent)
                 .preferredColorScheme(appearance.colorScheme)

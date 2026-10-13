@@ -17,6 +17,9 @@ struct SeriesEpisodesSection: View {
         VStack(alignment: .leading, spacing: 14) {
             Text("Episodes").font(.title3.weight(.bold))
             if seasons.count > 1 { seasonChips }
+            if !episodes.isEmpty {
+                DownloadButton(items: episodes, group: series, idleTitle: "Download \(selected?.name ?? "Season")")
+            }
             if isLoading {
                 ProgressView().frame(maxWidth: .infinity).padding(.vertical, 24)
             } else if failed || episodes.isEmpty {
@@ -24,8 +27,11 @@ struct SeriesEpisodesSection: View {
                     .font(.subheadline).foregroundStyle(.secondary)
             } else {
                 ForEach(episodes) { episode in
-                    Button { onPlay(episode) } label: { EpisodeRow(episode: episode) }
-                        .buttonStyle(.plain)
+                    HStack(spacing: 8) {
+                        Button { onPlay(episode) } label: { EpisodeRow(episode: episode) }
+                            .buttonStyle(.plain)
+                        DownloadIconButton(item: episode, group: series)
+                    }
                 }
             }
         }
@@ -148,6 +154,7 @@ struct AlbumTracksSection: View {
                 .buttonStyle(.plain)
             }
             .disabled(tracks.isEmpty)
+            DownloadButton(items: tracks, group: album, idleTitle: "Download Album")
             trackList
         }
         .task { await load() }
@@ -162,10 +169,14 @@ struct AlbumTracksSection: View {
         } else {
             VStack(spacing: 0) {
                 ForEach(Array(tracks.enumerated()), id: \.element.id) { offset, track in
-                    Button { audio.play(tracks, startAt: offset, using: store) } label: {
-                        TrackRow(track: track, number: offset + 1, isCurrent: audio.current?.id == track.id)
+                    HStack(spacing: 0) {
+                        Button { audio.play(tracks, startAt: offset, using: store) } label: {
+                            TrackRow(track: track, number: offset + 1, isCurrent: audio.current?.id == track.id)
+                        }
+                        .buttonStyle(.plain)
+                        DownloadIconButton(item: track, group: album)
+                            .padding(.trailing, 14)
                     }
-                    .buttonStyle(.plain)
                     if offset < tracks.count - 1 { Divider() }
                 }
             }

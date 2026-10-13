@@ -23,6 +23,9 @@ Prefer native Apple-like UI. Avoid web-dashboard-style components unless explici
 - Movies/Shows libraries show `RecentHeroHeader` (last watched via SortBy=DatePlayed, Limit 1).
 - ATS: only NSAllowsLocalNetworking; remote servers need HTTPS.
 
+- Branding: user's jellyfish-infinity logo is `Image("JellyLogo")` (Connect + Home header) and AppIcon.png (resized to 1024 via sips once; generateAppIcon rejects non-1024 images).
+- Downloads: `DownloadManager` (env, foreground URLSession, original file via `/Items/{id}/Download`, header auth), records in Application Support/Downloads/index.json, `MediaItem.localFileURL` makes Audio/Video players play offline. UI: toolbar link in `LibraryView` → `DownloadsView(kind:)`; `DownloadButton`/`DownloadIconButton` in detail views. Demo mode hides download buttons. Downloads pause when app is suspended; MKV etc. may not play in AVPlayer.
+
 ## Pitfalls
 
 - iOS 27 simulator runtime may be missing locally; build works but runApp can fail to boot.

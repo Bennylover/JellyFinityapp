@@ -24,6 +24,8 @@ final class AudioPlayer {
     var hasPrevious: Bool { index > 0 }
     var isActive: Bool { current != nil }
 
+    /// Called with the position of a downloaded item so offline progress can be saved on the device.
+    @ObservationIgnored var onLocalProgress: ((String, Double) -> Void)?
     @ObservationIgnored private let player = AVPlayer()
     @ObservationIgnored private var timeObserver: Any?
     @ObservationIgnored private var statusCancellable: AnyCancellable?
@@ -57,11 +59,16 @@ final class AudioPlayer {
     // MARK: - Transport
 
     func play(_ items: [MediaItem], startAt startIndex: Int, using store: SessionStore) {
-        guard let client = store.client, let userId = store.session?.userId else {
+        let client = store.client
+        let userId = store.session?.userId
+        let allLocal = !items.isEmpty && items.allSatisfy { $0.localFileURL != nil }
+        guard allLocal || (client != nil && userId != nil) else {
             errorMessage = "Connect to your own Jellyfin server to play music and audiobooks."
             return
         }
         guard items.indices.contains(startIndex) else { return }
+        reportCurrent(.stopped)
+        currentTime = 0
         self.client = client
         self.userId = userId
         queue = items
@@ -133,10 +140,16 @@ final class AudioPlayer {
 
     private func load(at newIndex: Int) {
         reportCurrent(.stopped)
-        guard queue.indices.contains(newIndex), let client, let userId else { return }
+        guard queue.indices.contains(newIndex) else { return }
         index = newIndex
         let item = queue[newIndex]
-        guard let url = client.audioStreamURL(itemId: item.id, userId: userId) else {
+        var streamURL: URL?
+        if let local = item.localFileURL {
+            streamURL = local
+        } else if let client, let userId {
+            streamURL = client.audioStreamURL(itemId: item.id, userId: userId)
+        }
+        guard let url = streamURL else {
             errorMessage = "That item couldn't be played."
             return
         }
@@ -195,8 +208,12 @@ final class AudioPlayer {
     // MARK: - Server sync
 
     private func reportCurrent(_ stage: PlaybackStage) {
-        guard let client, let item = current else { return }
+        guard let item = current else { return }
         lastReport = .now
+        if item.localFileURL != nil, stage != .started, currentTime > 0 {
+            onLocalProgress?(item.id, currentTime)
+        }
+        guard let client else { return }
         let sessionId = playSessionId
         let position = currentTime
         let paused = !isPlaying

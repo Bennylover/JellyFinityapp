@@ -83,15 +83,28 @@ private struct HomeHeader: View {
         }
     }
 
+    private var serverPill: some View {
+        Label(server, systemImage: isDemo ? "sparkles" : "server.rack")
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(theme.accent)
+            .lineLimit(1)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 5)
+            .background(theme.accent.opacity(0.12), in: Capsule())
+    }
+
     var body: some View {
         HStack(alignment: .center) {
             VStack(alignment: .leading, spacing: 6) {
-                Label(server, systemImage: isDemo ? "sparkles" : "server.rack")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(theme.accent)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 5)
-                    .background(theme.accent.opacity(0.12), in: Capsule())
+                HStack(spacing: 8) {
+                    Image("JellyLogo")
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 30, height: 30)
+                        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                        .accessibilityHidden(true)
+                    serverPill
+                }
                 Text("\(greeting),\n\(name)")
                     .font(.largeTitle.weight(.bold))
                     .lineLimit(2)

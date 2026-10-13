@@ -211,10 +211,16 @@ struct MediaDetailView: View {
     private var actions: some View {
         switch item.kind {
         case .movie, .episode:
-            PrimaryActionButton(title: playTitle, symbol: "play.fill") { playingVideo = item }
+            VStack(spacing: 12) {
+                PrimaryActionButton(title: playTitle, symbol: "play.fill") { playingVideo = item }
+                DownloadButton(items: [item])
+            }
         case .audiobook:
-            PrimaryActionButton(title: playTitle, symbol: "play.fill") {
-                audio.play([item], startAt: 0, using: store)
+            VStack(spacing: 12) {
+                PrimaryActionButton(title: playTitle, symbol: "play.fill") {
+                    audio.play([item], startAt: 0, using: store)
+                }
+                DownloadButton(items: [item])
             }
         default:
             EmptyView()

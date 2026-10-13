@@ -28,8 +28,13 @@ struct CachedImage<Content: View>: View {
     }
 
     var body: some View {
-        content(phase)
-            .task(id: url) {
+        // Color.clear guarantees there's always a real view on screen, so the loading task
+        // runs even while the content closure draws nothing (an empty view never "appears").
+        ZStack {
+            Color.clear.frame(width: 0, height: 0)
+            content(phase)
+        }
+        .task(id: url) {
                 await load()
             }
     }

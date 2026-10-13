@@ -108,7 +108,7 @@ extension SessionStore {
                 .map { ArtistHit(id: $0, name: $0, imageURL: nil) }
         }
         guard let (client, userId) = try? requireClient() else { return [] }
-        return (try? await client.searchArtists(userId: userId, term: term)) ?? []
+        return await client.searchArtists(userId: userId, term: term)
     }
 
     func fetchArtistAlbums(artist: String) async throws -> [MediaItem] {

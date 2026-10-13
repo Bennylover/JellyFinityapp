@@ -32,6 +32,9 @@ Prefer native Apple-like UI. Avoid web-dashboard-style components unless explici
 - Splash: `SplashView` overlay in `RootView` (~1.4 s, Reduce Motion aware); session restores underneath.
 - Dynamic Island: uses system Now Playing (MPNowPlayingInfoCenter + remote commands + background audio), not a custom Live Activity (would duplicate system UI). Audiobooks get 15/30 s skips.
 
+- Artist search: `JellyfinClient+Artists.swift` queries Artists/AlbumArtists, Artists, Search/Hints, Items(MusicArtist) in parallel with a minimal DTO, filters names locally; fallback filters full album-artist list.
+- Server discovery: `ServerScanner` probes the device's /24 subnet on port 8096 (`System/Info/Public`); shown by `NearbyServersSection` in ConnectView. No UDP broadcast (needs multicast entitlement).
+
 ## Pitfalls
 
 - iOS 27 simulator runtime may be missing locally; build works but runApp can fail to boot.

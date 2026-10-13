@@ -61,6 +61,16 @@ struct ConnectView: View {
                 serverBadge(server.name, version: server.version)
                 credentialFields
             } else {
+                NearbyServersSection { server in
+                    address = server.url.absoluteString
+                    errorMessage = nil
+                    foundServer = (server.url, server.name, server.version)
+                    focused = .username
+                }
+                Text("Or enter it manually")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .padding(.top, 4)
                 field("Server address", text: $address, icon: "server.rack", field: .address)
                     .keyboardType(.URL)
                     .submitLabel(.go)

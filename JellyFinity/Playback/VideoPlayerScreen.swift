@@ -22,8 +22,12 @@ final class VideoPlayerModel {
     @ObservationIgnored private(set) var lastPosition: Double = 0
     @ObservationIgnored private(set) var isLocal = false
     @ObservationIgnored private var failureWatch: AnyCancellable?
+    @ObservationIgnored private var userId: String?
+    @ObservationIgnored private var isDirectPlay = false
+    @ObservationIgnored private var isStopped = false
 
     /// Shows a message when AVPlayer can't handle the file (for example some downloaded containers).
+    /// If the original file fails to play directly, retries once with a server remux instead.
     private func watchForFailure(of newPlayer: AVPlayer, isLocal: Bool) {
         guard let playerItem = newPlayer.currentItem else { return }
         failureWatch = playerItem.publisher(for: \.status)
@@ -31,16 +35,44 @@ final class VideoPlayerModel {
             .sink { [weak self] status in
                 guard status == .failed else { return }
                 MainActor.assumeIsolated {
-                    self?.errorMessage = isLocal
+                    guard let self else { return }
+                    if self.isDirectPlay, !isLocal {
+                        NSLog("JellyFinity playback: direct play failed, retrying via server stream")
+                        self.restartStream(allowDirectPlay: false)
+                        return
+                    }
+                    self.errorMessage = isLocal
                         ? "This download is in a format iPhone can't play. Stream it from your server instead."
                         : "This video couldn't be played."
                 }
             }
     }
 
-    func start(item: MediaItem, store: SessionStore, audio: AudioPlayer) {
-        guard player == nil else { return }
+    /// Asks the server for the best stream for this iPhone; falls back to the classic HLS URL if that fails.
+    private func resolveStreamURL(allowDirectPlay: Bool = true) async -> URL? {
+        guard let client else { return nil }
+        if let userId {
+            let audioIsDefault = audioIndex == nil || audioIndex == tracks.defaultAudio?.index
+            do {
+                let playback = try await client.resolveVideoPlayback(
+                    itemId: itemId, userId: userId, audioIndex: audioIndex, subtitleIndex: subtitleIndex,
+                    audioIsDefault: audioIsDefault, allowDirectPlay: allowDirectPlay)
+                playSessionId = playback.playSessionId
+                isDirectPlay = playback.method == .directPlay
+                return playback.url
+            } catch {
+                NSLog("JellyFinity playback: PlaybackInfo failed (%@), using HLS fallback", "\(error)")
+            }
+        }
+        isDirectPlay = false
+        return client.videoStreamURL(itemId: itemId, playSessionId: playSessionId,
+                                     audioIndex: audioIndex, subtitleIndex: subtitleIndex)
+    }
+
+    func start(item: MediaItem, store: SessionStore, audio: AudioPlayer) async {
+        guard player == nil, !isStopped else { return }
         audio.pause()
+        itemId = item.id
 
         let url: URL?
         if let local = item.localFileURL {
@@ -51,10 +83,12 @@ final class VideoPlayerModel {
             url = SampleData.demoVideoURL
         } else if let client = store.client {
             self.client = client
-            url = client.videoStreamURL(itemId: item.id, playSessionId: playSessionId)
+            self.userId = store.session?.userId
+            url = await resolveStreamURL()
         } else {
             url = nil
         }
+        guard !isStopped, player == nil else { return }
         guard let url else {
             errorMessage = "Connect to your Jellyfin server to play this."
             return
@@ -64,11 +98,10 @@ final class VideoPlayerModel {
         try? audioSession.setCategory(.playback, mode: .moviePlayback)
         try? audioSession.setActive(true)
 
-        itemId = item.id
         let newPlayer = AVPlayer(url: url)
         watchForFailure(of: newPlayer, isLocal: isLocal)
         if !store.isDemo, let resume = item.resumeSeconds, resume > 5 {
-            newPlayer.seek(to: CMTime(seconds: resume, preferredTimescale: 600))
+            newPlayer.seek(to: CMTime(seconds: resume, preferredTimescale: 600), completionHandler: { _ in })
         }
         let interval = CMTime(seconds: 1, preferredTimescale: 600)
         timeObserver = newPlayer.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] time in
@@ -81,6 +114,7 @@ final class VideoPlayerModel {
     }
 
     func stop() {
+        isStopped = true
         guard let player else { return }
         send(.stopped, position: lastPosition, paused: true)
         if let timeObserver { player.removeTimeObserver(timeObserver) }
@@ -111,17 +145,20 @@ final class VideoPlayerModel {
     }
 
     /// Asks the server for the same video with the chosen tracks and continues from the current position.
-    private func restartStream() {
-        guard let player, let client, !isLocal else { return }
+    private func restartStream(allowDirectPlay: Bool = true) {
+        guard let player, client != nil, !isLocal else { return }
         let position = player.currentTime().seconds
-        let wasPlaying = player.timeControlStatus != .paused
-        guard let url = client.videoStreamURL(itemId: itemId, playSessionId: playSessionId,
-                                              audioIndex: audioIndex, subtitleIndex: subtitleIndex) else { return }
-        player.replaceCurrentItem(with: AVPlayerItem(url: url))
-        if position.isFinite, position > 1 {
-            player.seek(to: CMTime(seconds: position, preferredTimescale: 600))
+        let wasPlaying = player.timeControlStatus != .paused || !allowDirectPlay
+        Task {
+            guard let url = await resolveStreamURL(allowDirectPlay: allowDirectPlay),
+                  !isStopped, self.player === player else { return }
+            player.replaceCurrentItem(with: AVPlayerItem(url: url))
+            watchForFailure(of: player, isLocal: false)
+            if position.isFinite, position > 1 {
+                await player.seek(to: CMTime(seconds: position, preferredTimescale: 600))
+            }
+            if wasPlaying { player.play() }
         }
-        if wasPlaying { player.play() }
     }
 
     private func tick(_ seconds: Double) {
@@ -163,7 +200,7 @@ struct VideoPlayerScreen: View {
         }
         .statusBarHidden(true)
         .task {
-            model.start(item: downloads.localized(item), store: store, audio: audio)
+            await model.start(item: downloads.localized(item), store: store, audio: audio)
             await model.loadTracks(store: store)
         }
         .task {

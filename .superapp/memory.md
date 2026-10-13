@@ -22,6 +22,7 @@ Prefer native Apple-like UI. Avoid web-dashboard-style components unless explici
 - Video tracks: audio/subtitle chosen in `VideoPlayerScreen` menu; changing re-requests HLS with AudioStreamIndex / SubtitleStreamIndex (+SubtitleMethod=Encode, burned in).
 - Movies/Shows libraries show `RecentHeroHeader` (last watched via SortBy=DatePlayed, Limit 1).
 - ATS: only NSAllowsLocalNetworking; remote servers need HTTPS.
+- Video quality: `JellyfinClient+Playback.resolveVideoPlayback` POSTs `/Items/{id}/PlaybackInfo` with an iPhone DeviceProfile (direct play mp4/m4v/mov h264/hevc; HLS fMP4 hevc/h264 transcode profile; subs = Encode). Direct play disabled when subtitle burned in or non-default audio; if AVPlayer fails on direct play it retries via server stream; if PlaybackInfo fails falls back to `videoStreamURL`. Logs "JellyFinity playback: <method>".
 
 - Branding: user's jellyfish-infinity logo is `Image("JellyLogo")` (Connect + Home header) and AppIcon.png (resized to 1024 via sips once; generateAppIcon rejects non-1024 images).
 - Downloads: `DownloadManager` (env, foreground URLSession, original file via `/Items/{id}/Download`, header auth), records in Application Support/Downloads/index.json, `MediaItem.localFileURL` makes Audio/Video players play offline. UI: toolbar link in `LibraryView` → `DownloadsView(kind:)`; `DownloadButton`/`DownloadIconButton` in detail views. Demo mode hides download buttons. Downloads pause when app is suspended; MKV etc. may not play in AVPlayer.

@@ -33,6 +33,7 @@
 		8D665E7EFDA498767DB4E080 /* RecentHeroHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1C68FBEF9B45077750F11E0 /* RecentHeroHeader.swift */; };
 		94B848A1DA33C06C8CD42FCE /* ImageStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A06252ADF1B8944F56FF45CE /* ImageStore.swift */; };
 		95AFBD1B7071B59ACD99B766 /* SampleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 383E92E52036AA9C456F1DBC /* SampleData.swift */; };
+		988623B7D0645652B7B23AE5 /* JellyfinClient+Playback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 479EEADC9AFA1136B4475480 /* JellyfinClient+Playback.swift */; };
 		9A30FF3832B2123932ACCC8F /* ArtistAlbumsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E11696C49F5E3B3203C33E /* ArtistAlbumsView.swift */; };
 		A120469AB5534631FED7BA09 /* NowPlayingViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350CE045C9C8D696250E3861 /* NowPlayingViews.swift */; };
 		ACAC3E36938CA8951CB5640E /* ConnectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99A1ABABE07EDF9A2835A45 /* ConnectView.swift */; };
@@ -76,6 +77,7 @@
 		39291A8783832977BF89E858 /* DownloadsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadsView.swift; sourceTree = "<group>"; };
 		3D692FA7F0778DD062237B49 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
 		44112F091ABA4943C12D0454 /* DownloadManager+Offline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DownloadManager+Offline.swift"; sourceTree = "<group>"; };
+		479EEADC9AFA1136B4475480 /* JellyfinClient+Playback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "JellyfinClient+Playback.swift"; sourceTree = "<group>"; };
 		47C1C1E9A0CD5CE88414D95D /* IMDbClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IMDbClient.swift; sourceTree = "<group>"; };
 		4990F60436AEA30CC5175B9E /* JellyfinClient+Convert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "JellyfinClient+Convert.swift"; sourceTree = "<group>"; };
 		4AAAE79B3590A5DD4E65F35A /* NearbyServersSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearbyServersSection.swift; sourceTree = "<group>"; };
@@ -126,6 +128,7 @@
 				4FD35112D963B18A42FF918E /* JellyfinClient+Artists.swift */,
 				4990F60436AEA30CC5175B9E /* JellyfinClient+Convert.swift */,
 				AEF77BB0CB4D50077244392A /* JellyfinClient+Library.swift */,
+				479EEADC9AFA1136B4475480 /* JellyfinClient+Playback.swift */,
 				2741948E2B24DE74DF41D6B1 /* JellyfinDTOs.swift */,
 				3D692FA7F0778DD062237B49 /* KeychainStore.swift */,
 				6EC442C459D27446A7B1ABAB /* MetadataCache.swift */,
@@ -363,6 +366,7 @@
 				30969DB490A4B8A1FEF202A0 /* JellyfinClient+Artists.swift in Sources */,
 				3F8A2F87D2A560ECB152332E /* JellyfinClient+Convert.swift in Sources */,
 				8A9E97F715FC65355A7991BC /* JellyfinClient+Library.swift in Sources */,
+				988623B7D0645652B7B23AE5 /* JellyfinClient+Playback.swift in Sources */,
 				CC1AD568A085045A44A99C68 /* JellyfinClient.swift in Sources */,
 				08826C9867AF6903E623CC95 /* JellyfinDTOs.swift in Sources */,
 				75DB2653505E38A890E3D997 /* KeychainStore.swift in Sources */,

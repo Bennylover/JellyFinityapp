@@ -46,6 +46,10 @@ struct SettingsView: View {
             }
             .scrollContentBackground(.hidden)
             .background(theme.background.ignoresSafeArea())
+            .sensoryFeedback(.selection, trigger: themeRaw)
+            .sensoryFeedback(.selection, trigger: appearanceRaw)
+            .sensoryFeedback(.selection, trigger: maxBitrate)
+            .sensoryFeedback(.selection, trigger: convertDownloads)
             .navigationTitle("Settings")
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {

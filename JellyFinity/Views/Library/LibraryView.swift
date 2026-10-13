@@ -204,6 +204,7 @@ struct LibraryView: View {
             } label: {
                 Image(systemName: "arrow.up.arrow.down.circle")
             }
+            .sensoryFeedback(.selection, trigger: sort)
             .accessibilityLabel("Sort")
         }
     }
@@ -251,6 +252,7 @@ private struct GenreChipRow: View {
                 .background(isOn ? AnyShapeStyle(theme.accent) : AnyShapeStyle(theme.accent.opacity(0.12)), in: Capsule())
         }
         .buttonStyle(.plain)
+        .sensoryFeedback(.selection, trigger: isOn)
         .accessibilityAddTraits(isOn ? .isSelected : [])
     }
 }

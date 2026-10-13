@@ -58,20 +58,27 @@ struct RootView: View {
 
 struct MainTabView: View {
     @Environment(AudioPlayer.self) private var audio
+    @State private var tab = 0
 
     var body: some View {
-        TabView {
+        TabView(selection: $tab) {
             HomeView()
                 .tabItem { Label("Home", systemImage: "house.fill") }
+                .tag(0)
             LibraryView(kind: .movies)
                 .tabItem { Label("Movies", systemImage: "film.stack") }
+                .tag(1)
             LibraryView(kind: .shows)
                 .tabItem { Label("Shows", systemImage: "tv") }
+                .tag(2)
             LibraryView(kind: .albums)
                 .tabItem { Label("Music", systemImage: "music.note") }
+                .tag(3)
             LibraryView(kind: .audiobooks)
                 .tabItem { Label("Books", systemImage: "headphones") }
+                .tag(4)
         }
+        .sensoryFeedback(.selection, trigger: tab)
         .alert("Can't play that", isPresented: errorBinding) {
             Button("OK", role: .cancel) { audio.errorMessage = nil }
         } message: {

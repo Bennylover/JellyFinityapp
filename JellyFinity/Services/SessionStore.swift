@@ -84,6 +84,21 @@ final class SessionStore {
         phase = .signedOut
     }
 
+    /// Up to 8 movies with backdrops: most-watched first, topped up with recent ones.
+    static func featuredRotation(topWatched: [MediaItem], recent: [MediaItem]) -> [MediaItem] {
+        var result: [MediaItem] = []
+        var seen = Set<String>()
+        let top = topWatched.filter { $0.backdropImageURL != nil }.prefix(8)
+        for item in top where seen.insert(item.id).inserted { result.append(item) }
+        if result.count < 5 {
+            for item in recent where item.backdropImageURL != nil && result.count < 8 {
+                if seen.insert(item.id).inserted { result.append(item) }
+            }
+        }
+        if result.isEmpty, let first = recent.first { result = [first] }
+        return result
+    }
+
     func refresh() async {
         if phase == .demo {
             snapshot = SampleData.snapshot
@@ -104,11 +119,13 @@ final class SessionStore {
             async let counts = client.counts(userId: userId)
             let (resumeItems, movieItems, albumItems, countValues) = try await (resume, movies, albums, counts)
 
-            let featured = movieItems.first { $0.backdropImageURL != nil } ?? movieItems.first
+            let topWatched = (try? await client.topWatchedMovies(userId: userId, limit: 12)) ?? []
+            let rotation = Self.featuredRotation(topWatched: topWatched, recent: movieItems)
             snapshot = LibrarySnapshot(
-                featured: featured,
+                featured: rotation.first,
+                featuredItems: rotation,
                 continueWatching: resumeItems,
-                recentMovies: movieItems.filter { $0.id != featured?.id },
+                recentMovies: movieItems,
                 recentAlbums: albumItems,
                 counts: countValues
             )

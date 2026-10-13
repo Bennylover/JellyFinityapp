@@ -75,6 +75,16 @@ struct JellyfinClient: Sendable {
         ])
     }
 
+    /// Movies the user has watched, most-played (then most recently played) first.
+    func topWatchedMovies(userId: String, limit: Int) async throws -> [MediaItem] {
+        try await items(query: [
+            .init(name: "userId", value: userId), .init(name: "IncludeItemTypes", value: "Movie"),
+            .init(name: "Filters", value: "IsPlayed"), .init(name: "Recursive", value: "true"),
+            .init(name: "SortBy", value: "PlayCount,DatePlayed"), .init(name: "SortOrder", value: "Descending"),
+            .init(name: "Limit", value: String(limit)), .init(name: "Fields", value: "Genres,Overview")
+        ])
+    }
+
     func counts(userId: String) async throws -> LibraryCounts {
         let data = try await send("Items/Counts", query: [.init(name: "userId", value: userId)])
         let dto = try decode(CountsDTO.self, from: data)

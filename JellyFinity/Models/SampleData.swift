@@ -36,8 +36,9 @@ enum SampleData {
 
     static let snapshot = LibrarySnapshot(
         featured: movies[0],
+        featuredItems: Array(movies.prefix(5)),
         continueWatching: continueWatching,
-        recentMovies: Array(movies.dropFirst()),
+        recentMovies: movies,
         recentAlbums: albums,
         counts: LibraryCounts(movies: 248, series: 42, albums: 186, audiobooks: 37)
     )

@@ -173,6 +173,7 @@ struct LibraryCounts: Sendable, Equatable, Codable {
 
 struct LibrarySnapshot: Sendable, Codable {
     var featured: MediaItem?
+    var featuredItems: [MediaItem] = []
     var continueWatching: [MediaItem] = []
     var recentMovies: [MediaItem] = []
     var recentAlbums: [MediaItem] = []

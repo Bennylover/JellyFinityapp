@@ -48,7 +48,10 @@ struct HomeView: View {
 
     @ViewBuilder
     private func sections(_ snapshot: LibrarySnapshot) -> some View {
-        if let featured = snapshot.featured {
+        if !snapshot.featuredItems.isEmpty {
+            FeaturedCarousel(items: snapshot.featuredItems)
+                .padding(.horizontal)
+        } else if let featured = snapshot.featured {
             NavigationLink(value: featured) { FeaturedHeroCard(item: featured) }
                 .buttonStyle(.plain)
                 .padding(.horizontal)

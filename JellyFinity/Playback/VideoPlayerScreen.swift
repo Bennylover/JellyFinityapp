@@ -150,6 +150,7 @@ struct VideoPlayerScreen: View {
     @Environment(DownloadManager.self) private var downloads
     @Environment(\.dismiss) private var dismiss
     @State private var model = VideoPlayerModel()
+    @State private var showTitle = true
     let item: MediaItem
 
     var body: some View {
@@ -164,6 +165,10 @@ struct VideoPlayerScreen: View {
         .task {
             model.start(item: downloads.localized(item), store: store, audio: audio)
             await model.loadTracks(store: store)
+        }
+        .task {
+            try? await Task.sleep(for: .seconds(2.5))
+            showTitle = false
         }
         .onDisappear {
             model.stop()
@@ -196,6 +201,8 @@ struct VideoPlayerScreen: View {
                 .foregroundStyle(.white)
                 .lineLimit(1)
                 .frame(maxWidth: .infinity)
+                .opacity(showTitle ? 1 : 0)
+                .animation(.easeOut(duration: 0.8), value: showTitle)
             if model.tracks.isEmpty {
                 Color.clear.frame(width: 40, height: 40)
             } else {

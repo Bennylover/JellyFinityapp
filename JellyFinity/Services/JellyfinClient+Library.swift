@@ -107,6 +107,17 @@ extension JellyfinClient {
 
     // MARK: - Streaming
 
+    /// UserDefaults key for the streaming quality limit, in megabits per second.
+    static let bitrateKey = "jl.maxBitrateMbps"
+    static let defaultBitrateMbps = 120
+
+    /// The user's chosen video bitrate cap in bits per second.
+    static var maxStreamingBitrate: Int {
+        let stored = UserDefaults.standard.integer(forKey: bitrateKey)
+        let mbps = stored > 0 ? stored : defaultBitrateMbps
+        return mbps * 1_000_000
+    }
+
     /// HLS stream that the server remuxes or transcodes into something AVPlayer can play.
     /// A chosen subtitle is burned into the picture so it works for every subtitle format.
     func videoStreamURL(itemId: String, playSessionId: String,
@@ -121,7 +132,9 @@ extension JellyfinClient {
             .init(name: "TranscodingMaxAudioChannels", value: "6"),
             .init(name: "SegmentContainer", value: "mp4"), .init(name: "MinSegments", value: "1"),
             .init(name: "BreakOnNonKeyFrames", value: "true"),
-            .init(name: "MaxStreamingBitrate", value: "40000000")
+            .init(name: "MaxStreamingBitrate", value: String(Self.maxStreamingBitrate)),
+            .init(name: "AllowVideoStreamCopy", value: "true"),
+            .init(name: "AllowAudioStreamCopy", value: "true")
         ]
         if let audioIndex { query.append(.init(name: "AudioStreamIndex", value: String(audioIndex))) }
         if let subtitleIndex {

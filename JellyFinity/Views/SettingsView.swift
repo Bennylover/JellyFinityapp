@@ -5,6 +5,7 @@ struct SettingsView: View {
     @Environment(\.appTheme) private var theme
     @Environment(\.dismiss) private var dismiss
     @AppStorage(DownloadManager.convertKey) private var convertDownloads = true
+    @AppStorage(JellyfinClient.bitrateKey) private var maxBitrate = JellyfinClient.defaultBitrateMbps
     @AppStorage("jl.theme") private var themeRaw = AppTheme.aurora.rawValue
     @AppStorage("jl.appearance") private var appearanceRaw = AppearanceMode.system.rawValue
 
@@ -25,6 +26,15 @@ struct SettingsView: View {
                     .pickerStyle(.segmented)
                 }
                 TMDBKeySection()
+                Section {
+                    Picker("Maximum bitrate", selection: $maxBitrate) {
+                        ForEach([8, 20, 40, 60, 80, 120, 200], id: \.self) { Text("\($0) Mbps").tag($0) }
+                    }
+                } header: {
+                    Text("Video Quality")
+                } footer: {
+                    Text("Higher values keep more detail but need a faster connection. Lower it if videos buffer on cellular. Applies to the next video you start.")
+                }
                 Section {
                     Toggle("Convert for iPhone", isOn: $convertDownloads)
                 } header: {

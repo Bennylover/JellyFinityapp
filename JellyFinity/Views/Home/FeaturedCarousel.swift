@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// Home hero: swipe sideways through the featured titles. It also advances by itself
-/// every 10 seconds, and the timer restarts after each swipe.
+/// every 6 seconds, and the timer restarts after each swipe.
 struct FeaturedCarousel: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.appTheme) private var theme
@@ -37,6 +37,7 @@ struct FeaturedCarousel: View {
                 ForEach(Array(items.enumerated()), id: \.offset) { offset, item in
                     NavigationLink(value: item) { FeaturedHeroCard(item: item) }
                         .buttonStyle(.plain)
+                        .playHaptic()
                         .containerRelativeFrame(.horizontal)
                         .scrollTransition(.animated) { content, phase in
                             content
@@ -68,7 +69,7 @@ struct FeaturedCarousel: View {
 
     private func advanceLoop() async {
         guard items.count > 1 else { return }
-        try? await Task.sleep(for: .seconds(10))
+        try? await Task.sleep(for: .seconds(6))
         if Task.isCancelled { return }
         let next = (index + 1) % items.count
         autoAdvancing = true

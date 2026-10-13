@@ -155,6 +155,7 @@ struct AlbumTracksSection: View {
                         .background(theme.accent.opacity(0.12), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                 }
                 .buttonStyle(.plain)
+                .playHaptic()
             }
             .disabled(tracks.isEmpty)
             DownloadButton(items: tracks, group: album, idleTitle: "Download Album")
@@ -177,6 +178,7 @@ struct AlbumTracksSection: View {
                             TrackRow(track: track, number: offset + 1, isCurrent: audio.current?.id == track.id)
                         }
                         .buttonStyle(.plain)
+                        .selectionHaptic()
                         DownloadIconButton(item: track, group: album)
                             .padding(.trailing, 14)
                     }

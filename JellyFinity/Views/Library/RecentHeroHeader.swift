@@ -93,6 +93,7 @@ struct RecentHeroHeader: View {
                         .background(.white, in: Capsule())
                 }
                 .buttonStyle(.plain)
+                .playHaptic()
             }
             NavigationLink(value: detailTarget) {
                 Label("Details", systemImage: "info.circle")

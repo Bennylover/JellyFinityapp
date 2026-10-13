@@ -114,6 +114,7 @@ struct ContinueWatchingRow: View {
                     ForEach(items) { item in
                         NavigationLink(value: item) { ContinueCard(item: item) }
                             .buttonStyle(.plain)
+                            .selectionHaptic()
                     }
                 }
                 .padding(.horizontal)
@@ -175,6 +176,7 @@ struct PosterRow: View {
                     ForEach(items) { item in
                         NavigationLink(value: item) { PosterCard(item: item) }
                             .buttonStyle(.plain)
+                            .selectionHaptic()
                     }
                 }
                 .padding(.horizontal)
@@ -237,6 +239,7 @@ struct AlbumRow: View {
                             .frame(width: 150, alignment: .leading)
                         }
                         .buttonStyle(.plain)
+                        .selectionHaptic()
                     }
                 }
                 .padding(.horizontal)

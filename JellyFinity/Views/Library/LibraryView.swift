@@ -169,6 +169,7 @@ struct LibraryView: View {
                     ForEach(model.items) { item in
                         NavigationLink(value: item) { LibraryCard(item: item, kind: kind) }
                             .buttonStyle(.plain)
+                            .selectionHaptic()
                             .task { await loadMore(after: item) }
                     }
                 }

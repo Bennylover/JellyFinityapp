@@ -280,5 +280,6 @@ struct PrimaryActionButton: View {
                 .shadow(color: theme.accent.opacity(0.35), radius: 12, y: 6)
         }
         .buttonStyle(.plain)
+        .playHaptic()
     }
 }

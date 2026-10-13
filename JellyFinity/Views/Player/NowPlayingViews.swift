@@ -39,6 +39,7 @@ struct MiniPlayerBar: View {
                 Button { audio.togglePlayPause() } label: {
                     Image(systemName: audio.isPlaying ? "pause.fill" : "play.fill").font(.title3)
                 }
+                .playHaptic()
                 .accessibilityLabel(audio.isPlaying ? "Pause" : "Play")
                 Button { audio.next() } label: {
                     Image(systemName: "forward.fill").font(.title3)
@@ -141,6 +142,7 @@ struct NowPlayingView: View {
                     .font(.system(size: 68))
                     .foregroundStyle(theme.gradient)
             }
+            .playHaptic()
             .accessibilityLabel(audio.isPlaying ? "Pause" : "Play")
             Button { audio.next() } label: { Image(systemName: "forward.fill").font(.title) }
                 .disabled(!audio.hasNext)

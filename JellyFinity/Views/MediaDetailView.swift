@@ -80,6 +80,7 @@ struct MediaDetailView: View {
     @Environment(\.appTheme) private var theme
     @Environment(SessionStore.self) private var store
     @Environment(AudioPlayer.self) private var audio
+    @Environment(DownloadManager.self) private var downloads
     @State private var item: MediaItem
     @State private var playingVideo: MediaItem?
     @State private var scrollY: CGFloat = 0
@@ -230,7 +231,7 @@ struct MediaDetailView: View {
         case .audiobook:
             VStack(spacing: 12) {
                 PrimaryActionButton(title: playTitle, symbol: "play.fill") {
-                    audio.play([item], startAt: 0, using: store)
+                    audio.play([downloads.localized(item)], startAt: 0, using: store)
                 }
                 DownloadButton(items: [item])
             }

@@ -13,7 +13,11 @@ final class LibraryModel {
     @ObservationIgnored private var generation = 0
     private let pageSize = 60
 
-    func reload(kind: LibraryKind, sort: LibrarySort, search: String, genre: String?, store: SessionStore) async {
+    /// True when the server couldn't be reached and the grid shows downloads instead.
+    private(set) var isOffline = false
+
+    func reload(kind: LibraryKind, sort: LibrarySort, search: String, genre: String?,
+                store: SessionStore, downloads: DownloadManager) async {
         generation += 1
         let current = generation
         isLoading = true
@@ -24,10 +28,12 @@ final class LibraryModel {
             guard current == generation else { return }
             items = result.items
             total = result.total
+            isOffline = false
         } catch {
             guard current == generation, !Task.isCancelled else { return }
-            items = []
-            total = 0
+            items = downloads.offlineLibrary(kind: kind, search: search, genre: genre)
+            total = items.count
+            isOffline = true
             errorMessage = error.localizedDescription
         }
         isLoading = false
@@ -36,7 +42,7 @@ final class LibraryModel {
 
     func loadMoreIfNeeded(after item: MediaItem, kind: LibraryKind, sort: LibrarySort,
                           search: String, genre: String?, store: SessionStore) async {
-        guard item.id == items.last?.id, items.count < total, !isLoading else { return }
+        guard !isOffline, item.id == items.last?.id, items.count < total, !isLoading else { return }
         let current = generation
         isLoading = true
         defer { isLoading = false }
@@ -158,9 +164,7 @@ struct LibraryView: View {
         } else {
             VStack(alignment: .leading, spacing: 12) {
                 if !artists.isEmpty { ArtistSearchRow(artists: artists) }
-                Text("\(model.total) \(model.total == 1 ? "title" : "titles") · \(sort.label)")
-                    .font(.footnote.weight(.medium))
-                    .foregroundStyle(.secondary)
+                countLine
                 LazyVGrid(columns: columns, alignment: .leading, spacing: 18) {
                     ForEach(model.items) { item in
                         NavigationLink(value: item) { LibraryCard(item: item, kind: kind) }
@@ -169,6 +173,19 @@ struct LibraryView: View {
                     }
                 }
             }
+        }
+    }
+
+    @ViewBuilder
+    private var countLine: some View {
+        if model.isOffline {
+            Label("Server offline · showing \(model.total) downloaded", systemImage: "icloud.slash")
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(theme.accent)
+        } else {
+            Text("\(model.total) \(model.total == 1 ? "title" : "titles") · \(sort.label)")
+                .font(.footnote.weight(.medium))
+                .foregroundStyle(.secondary)
         }
     }
 
@@ -192,7 +209,8 @@ struct LibraryView: View {
     }
 
     private func reload() async {
-        await model.reload(kind: kind, sort: sort, search: search, genre: selectedGenre, store: store)
+        await model.reload(kind: kind, sort: sort, search: search, genre: selectedGenre,
+                           store: store, downloads: downloads)
     }
 
     private func loadMore(after item: MediaItem) async {

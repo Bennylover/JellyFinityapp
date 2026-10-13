@@ -20,7 +20,7 @@ final class VideoPlayerModel {
     @ObservationIgnored private var timeObserver: Any?
     @ObservationIgnored private var lastReport = Date.distantPast
     @ObservationIgnored private(set) var lastPosition: Double = 0
-    @ObservationIgnored private var isLocal = false
+    @ObservationIgnored private(set) var isLocal = false
     @ObservationIgnored private var failureWatch: AnyCancellable?
 
     /// Shows a message when AVPlayer can't handle the file (for example some downloaded containers).
@@ -162,12 +162,12 @@ struct VideoPlayerScreen: View {
         }
         .statusBarHidden(true)
         .task {
-            model.start(item: item, store: store, audio: audio)
+            model.start(item: downloads.localized(item), store: store, audio: audio)
             await model.loadTracks(store: store)
         }
         .onDisappear {
             model.stop()
-            if item.localFileURL != nil { downloads.saveResume(id: item.id, seconds: model.lastPosition) }
+            if model.isLocal { downloads.saveResume(id: item.id, seconds: model.lastPosition) }
         }
     }
 

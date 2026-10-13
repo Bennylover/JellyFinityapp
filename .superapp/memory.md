@@ -36,6 +36,7 @@ Prefer native Apple-like UI. Avoid web-dashboard-style components unless explici
 - Server discovery: `ServerScanner` probes the device's /24 subnet on port 8096 (`System/Info/Public`); shown by `NearbyServersSection` in ConnectView. No UDP broadcast (needs multicast entitlement).
 
 ## Pitfalls
+- Offline: `DownloadManager+Offline` — `LibraryModel.reload` falls back to `offlineLibrary` (albums/shows grouped by groupId) on server error; album tracks/episodes fall back to `offlineChildren`; `localized()` swaps in local files (VideoPlayerScreen does it centrally; audio callers must call it).
 - `CachedImage`: content closure may render nothing while loading; `.task` on an empty view never fires → keep a zero-size `Color.clear` anchor in its ZStack (this caused all-blank posters).
 - Artist page hero: `ArtistHeroHeader` uses artist Backdrop → Primary → first album art; details via `client.artistDetails` (exact-name search hit).
 

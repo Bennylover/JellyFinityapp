@@ -50,6 +50,7 @@
 		DF72BF6EAD3ED2D7BE4C7617 /* MediaDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E100D6AA18BE24D6C3BBD487 /* MediaDetailView.swift */; };
 		E34F4C0A347D222CDBB772BC /* SampleData+Library.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CA9FB0876E7F85724832FFB /* SampleData+Library.swift */; };
 		E822F3C157F2148733073404 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C205A40BFB5D88F8FF1AD20D /* SplashView.swift */; };
+		E9B67F91D5B52075930475DD /* DownloadManager+Offline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44112F091ABA4943C12D0454 /* DownloadManager+Offline.swift */; };
 		EF8AEF95DACF472807ECFBB3 /* MetadataCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EC442C459D27446A7B1ABAB /* MetadataCache.swift */; };
 		F24F70547DCD4B13537E3993 /* CastMember.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5BB4700BD6DD79E776438EA /* CastMember.swift */; };
 		F5FBD6352BDD6D10938DB8A2 /* ArtistSearchRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10792463640DA800B6061FCB /* ArtistSearchRow.swift */; };
@@ -74,6 +75,7 @@
 		383E92E52036AA9C456F1DBC /* SampleData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleData.swift; sourceTree = "<group>"; };
 		39291A8783832977BF89E858 /* DownloadsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadsView.swift; sourceTree = "<group>"; };
 		3D692FA7F0778DD062237B49 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
+		44112F091ABA4943C12D0454 /* DownloadManager+Offline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DownloadManager+Offline.swift"; sourceTree = "<group>"; };
 		47C1C1E9A0CD5CE88414D95D /* IMDbClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IMDbClient.swift; sourceTree = "<group>"; };
 		4990F60436AEA30CC5175B9E /* JellyfinClient+Convert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "JellyfinClient+Convert.swift"; sourceTree = "<group>"; };
 		4AAAE79B3590A5DD4E65F35A /* NearbyServersSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearbyServersSection.swift; sourceTree = "<group>"; };
@@ -115,6 +117,7 @@
 			isa = PBXGroup;
 			children = (
 				CC6E49F11E2EADD0A46BE74A /* DownloadManager.swift */,
+				44112F091ABA4943C12D0454 /* DownloadManager+Offline.swift */,
 				20894D513252AB6086AB69CA /* DownloadRecord.swift */,
 				55847D031E59549838139B81 /* DownloadSessionDelegate.swift */,
 				A06252ADF1B8944F56FF45CE /* ImageStore.swift */,
@@ -347,6 +350,7 @@
 				31FE211BE1C06CFC0FA74DCA /* CastSection.swift in Sources */,
 				ACAC3E36938CA8951CB5640E /* ConnectView.swift in Sources */,
 				BCD8C668D7860D56DE54DDDF /* DownloadButtons.swift in Sources */,
+				E9B67F91D5B52075930475DD /* DownloadManager+Offline.swift in Sources */,
 				C2CF3D8AF5D24E03CA1165FB /* DownloadManager.swift in Sources */,
 				D5A4E1BB413E237A69B71800 /* DownloadRecord.swift in Sources */,
 				B42DD091B7E7B5C77CE049E2 /* DownloadSessionDelegate.swift in Sources */,

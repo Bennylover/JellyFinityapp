@@ -3,6 +3,7 @@ import SwiftUI
 /// Seasons picker plus episode list for a show. Tapping an episode starts playback.
 struct SeriesEpisodesSection: View {
     @Environment(SessionStore.self) private var store
+    @Environment(DownloadManager.self) private var downloads
     @Environment(\.appTheme) private var theme
     let series: MediaItem
     let onPlay: (MediaItem) -> Void
@@ -64,7 +65,8 @@ struct SeriesEpisodesSection: View {
             selected = seasons.first
             if seasons.isEmpty { isLoading = false }
         } catch {
-            failed = true
+            episodes = downloads.offlineChildren(of: series.id)
+            failed = episodes.isEmpty
             isLoading = false
         }
     }
@@ -129,6 +131,7 @@ private struct EpisodeRow: View {
 struct AlbumTracksSection: View {
     @Environment(SessionStore.self) private var store
     @Environment(AudioPlayer.self) private var audio
+    @Environment(DownloadManager.self) private var downloads
     @Environment(\.appTheme) private var theme
     let album: MediaItem
 
@@ -185,7 +188,11 @@ struct AlbumTracksSection: View {
     }
 
     private func load() async {
-        tracks = (try? await store.fetchTracks(of: album)) ?? []
+        if let fetched = try? await store.fetchTracks(of: album), !fetched.isEmpty {
+            tracks = downloads.localized(fetched)
+        } else {
+            tracks = downloads.offlineChildren(of: album.id)
+        }
         isLoading = false
     }
 }

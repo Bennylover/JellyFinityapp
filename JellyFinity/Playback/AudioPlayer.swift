@@ -17,6 +17,8 @@ struct QueueEntry: Identifiable {
 @Observable
 final class AudioPlayer {
     private(set) var entries: [QueueEntry] = []
+    /// Songs queued while nothing was playing; they join the queue when playback starts.
+    @ObservationIgnored private var pendingQueue: [QueueEntry] = []
     var queue: [MediaItem] { entries.map(\.item) }
     private(set) var index = 0
     /// Albums you played most recently, newest first.
@@ -90,6 +92,10 @@ final class AudioPlayer {
         self.client = client
         self.userId = userId
         entries = items.map { QueueEntry(item: $0) }
+        if items.indices.contains(startIndex), !pendingQueue.isEmpty {
+            entries.insert(contentsOf: pendingQueue, at: startIndex + 1)
+        }
+        pendingQueue = []
         errorMessage = nil
         if let album { recordRecent(album) }
         activateSession()
@@ -99,11 +105,15 @@ final class AudioPlayer {
     // MARK: - Queue
 
     /// Adds a song after any songs you already queued (like Spotify's "Add to queue").
-    /// If nothing is playing yet, the song simply starts playing.
+    /// If nothing is playing, the song waits in the queue and plays after whatever you start next.
     func enqueue(_ item: MediaItem, playNext: Bool = false, using store: SessionStore) {
         guard current != nil else {
-            play([item], startAt: 0, using: store)
-            if current != nil { announce("Playing \(item.name)") }
+            if playNext {
+                pendingQueue.insert(QueueEntry(item: item, isQueued: true), at: 0)
+            } else {
+                pendingQueue.append(QueueEntry(item: item, isQueued: true))
+            }
+            announce("Added to queue")
             return
         }
         var position = index + 1

@@ -4,6 +4,7 @@ import SwiftUI
 private struct SwipeToQueue: ViewModifier {
     @Environment(\.appTheme) private var theme
     let onQueue: () -> Void
+    @Binding var suppressTap: Bool
 
     @State private var offset: CGFloat = 0
     @State private var crossed = false
@@ -42,6 +43,7 @@ private struct SwipeToQueue: ViewModifier {
         DragGesture(minimumDistance: 18)
             .onChanged { value in
                 guard isHorizontal(value.translation) else { return }
+                if !suppressTap { suppressTap = true }
                 let width = value.translation.width
                 let magnitude = abs(width)
                 let damped = magnitude < 96 ? magnitude : 96 + (magnitude - 96) * 0.15
@@ -55,7 +57,18 @@ private struct SwipeToQueue: ViewModifier {
                 }
                 crossed = false
                 withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) { offset = 0 }
+                releaseTapGuard()
             }
+    }
+
+    /// The row moves with the finger, so the button underneath still sees a "tap" on release.
+    /// Keep taps suppressed briefly after a swipe so it doesn't start the song.
+    private func releaseTapGuard() {
+        guard suppressTap else { return }
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(450))
+            suppressTap = false
+        }
     }
 
     private func isHorizontal(_ translation: CGSize) -> Bool {
@@ -65,7 +78,8 @@ private struct SwipeToQueue: ViewModifier {
 
 extension View {
     /// Swipe left or right on a row to add it to the play queue.
-    func swipeToQueue(perform action: @escaping () -> Void) -> some View {
-        modifier(SwipeToQueue(onQueue: action))
+    /// `suppressTap` is true during and just after a swipe; ignore row taps while it is set.
+    func swipeToQueue(suppressTap: Binding<Bool>, perform action: @escaping () -> Void) -> some View {
+        modifier(SwipeToQueue(onQueue: action, suppressTap: suppressTap))
     }
 }

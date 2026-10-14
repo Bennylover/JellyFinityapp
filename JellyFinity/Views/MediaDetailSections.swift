@@ -137,6 +137,7 @@ struct AlbumTracksSection: View {
 
     @State private var tracks: [MediaItem] = []
     @State private var isLoading = true
+    @State private var swipeActive = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -174,7 +175,10 @@ struct AlbumTracksSection: View {
             VStack(spacing: 0) {
                 ForEach(Array(tracks.enumerated()), id: \.element.id) { offset, track in
                     HStack(spacing: 0) {
-                        Button { audio.play(tracks, startAt: offset, using: store, album: album) } label: {
+                        Button {
+                            guard !swipeActive else { return }
+                            audio.play(tracks, startAt: offset, using: store, album: album)
+                        } label: {
                             TrackRow(track: track, number: offset + 1, isCurrent: audio.current?.id == track.id)
                         }
                         .buttonStyle(.plain)
@@ -182,7 +186,7 @@ struct AlbumTracksSection: View {
                         DownloadIconButton(item: track, group: album)
                             .padding(.trailing, 14)
                     }
-                    .swipeToQueue { audio.enqueue(track, using: store) }
+                    .swipeToQueue(suppressTap: $swipeActive) { audio.enqueue(track, using: store) }
                     .contextMenu {
                         Button { audio.enqueue(track, playNext: true, using: store) } label: {
                             Label("Play Next", systemImage: "text.insert")

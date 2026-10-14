@@ -36,6 +36,8 @@ Prefer native Apple-like UI. Avoid web-dashboard-style components unless explici
 - Artist search: `JellyfinClient+Artists.swift` queries Artists/AlbumArtists, Artists, Search/Hints, Items(MusicArtist) in parallel with a minimal DTO, filters names locally; fallback filters full album-artist list.
 - Server discovery: `ServerScanner` probes the device's /24 subnet on port 8096 (`System/Info/Public`); shown by `NearbyServersSection` in ConnectView. No UDP broadcast (needs multicast entitlement).
 
+- Music queue: `AudioPlayer.entries` ([QueueEntry], `isQueued` = added by hand); `enqueue(_:playNext:using:)`, `upcoming`, `QueueView` sheet from NowPlaying. `.swipeToQueue` modifier on album track rows (+ leading swipe in Downloads). Recently played albums: `RecentMusicStore` (UserDefaults `jl.recentAlbums.v1`), recorded via `audio.play(..., album:)`; shown as `RecentMusicHero` in Music tab and `RecentAlbumsRow` on Home.
+
 ## Pitfalls
 - Offline: `DownloadManager+Offline` — `LibraryModel.reload` falls back to `offlineLibrary` (albums/shows grouped by groupId) on server error; album tracks/episodes fall back to `offlineChildren`; `localized()` swaps in local files (VideoPlayerScreen does it centrally; audio callers must call it).
 - `CachedImage`: content closure may render nothing while loading; `.task` on an empty view never fires → keep a zero-size `Color.clear` anchor in its ZStack (this caused all-blank posters).

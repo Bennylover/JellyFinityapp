@@ -60,6 +60,7 @@ struct LibraryView: View {
     @Environment(SessionStore.self) private var store
     @Environment(\.appTheme) private var theme
     @Environment(DownloadManager.self) private var downloads
+    @Environment(AudioPlayer.self) private var audio
     @State private var model = LibraryModel()
     @State private var search = ""
     @State private var sort: LibrarySort = .recentlyAdded
@@ -127,7 +128,16 @@ struct LibraryView: View {
 
     @ViewBuilder
     private var hero: some View {
-        if search.isEmpty, selectedGenre == nil, let lastWatched {
+        let isBrowsing = search.isEmpty && selectedGenre == nil
+        if isBrowsing, kind == .albums, let recent = audio.recentAlbums.first {
+            RecentMusicHero(album: recent)
+                .transition(.opacity)
+            if audio.recentAlbums.count > 1 {
+                RecentAlbumsRow(albums: Array(audio.recentAlbums.dropFirst()), title: "Listen Again",
+                                subtitle: "Albums you played lately")
+                    .padding(.horizontal, -16)
+            }
+        } else if isBrowsing, let lastWatched {
             RecentHeroHeader(item: lastWatched) { playing = lastWatched }
                 .transition(.opacity)
         }

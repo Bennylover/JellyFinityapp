@@ -121,6 +121,16 @@ struct DownloadsView: View {
             DownloadRow(record: record, isCurrent: audio.current?.id == record.id)
         }
         .buttonStyle(.plain)
+        .swipeActions(edge: .leading, allowsFullSwipe: true) {
+            if record.library == .albums {
+                Button {
+                    audio.enqueue(record.mediaItem, using: store)
+                } label: {
+                    Label("Queue", systemImage: "text.line.first.and.arrowtriangle.forward")
+                }
+                .tint(theme.accent)
+            }
+        }
         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
             Button(role: .destructive) {
                 downloads.remove([record.id])

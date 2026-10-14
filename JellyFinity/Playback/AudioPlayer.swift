@@ -2,14 +2,28 @@ import AVFoundation
 import Combine
 import MediaPlayer
 import Observation
+import SwiftUI
 import UIKit
+
+/// One song in the play queue. `isQueued` marks songs the user added by hand ("Next in queue").
+struct QueueEntry: Identifiable {
+    let id = UUID()
+    let item: MediaItem
+    var isQueued = false
+}
 
 /// App-wide music and audiobook player with a queue, lock-screen controls and Jellyfin progress sync.
 @MainActor
 @Observable
 final class AudioPlayer {
-    private(set) var queue: [MediaItem] = []
+    private(set) var entries: [QueueEntry] = []
+    var queue: [MediaItem] { entries.map(\.item) }
     private(set) var index = 0
+    /// Albums you played most recently, newest first.
+    private(set) var recentAlbums: [MediaItem] = RecentMusicStore.load()
+    /// Short confirmation such as "Added to queue", shown above the mini player.
+    private(set) var toast: String?
+    private(set) var toastCount = 0
     private(set) var isPlaying = false
     private(set) var currentTime: Double = 0
     private(set) var duration: Double = 0
@@ -19,8 +33,10 @@ final class AudioPlayer {
         didSet { applyRate() }
     }
 
-    var current: MediaItem? { queue.indices.contains(index) ? queue[index] : nil }
-    var hasNext: Bool { index + 1 < queue.count }
+    var current: MediaItem? { entries.indices.contains(index) ? entries[index].item : nil }
+    var hasNext: Bool { index + 1 < entries.count }
+    /// Songs that will play after the current one, in order.
+    var upcoming: [QueueEntry] { current == nil ? [] : Array(entries.dropFirst(index + 1)) }
     var hasPrevious: Bool { index > 0 }
     var isActive: Bool { current != nil }
 
@@ -38,6 +54,7 @@ final class AudioPlayer {
     @ObservationIgnored private var artwork: MPMediaItemArtwork?
     @ObservationIgnored private var artworkTask: Task<Void, Never>?
     @ObservationIgnored private var interruptionObserver: NSObjectProtocol?
+    @ObservationIgnored private var toastTask: Task<Void, Never>?
 
     init() {
         player.automaticallyWaitsToMinimizeStalling = true
@@ -59,7 +76,7 @@ final class AudioPlayer {
 
     // MARK: - Transport
 
-    func play(_ items: [MediaItem], startAt startIndex: Int, using store: SessionStore) {
+    func play(_ items: [MediaItem], startAt startIndex: Int, using store: SessionStore, album: MediaItem? = nil) {
         let client = store.client
         let userId = store.session?.userId
         let allLocal = !items.isEmpty && items.allSatisfy { $0.localFileURL != nil }
@@ -72,10 +89,72 @@ final class AudioPlayer {
         currentTime = 0
         self.client = client
         self.userId = userId
-        queue = items
+        entries = items.map { QueueEntry(item: $0) }
         errorMessage = nil
+        if let album { recordRecent(album) }
         activateSession()
         load(at: startIndex)
+    }
+
+    // MARK: - Queue
+
+    /// Adds a song after any songs you already queued (like Spotify's "Add to queue").
+    /// If nothing is playing yet, the song simply starts playing.
+    func enqueue(_ item: MediaItem, playNext: Bool = false, using store: SessionStore) {
+        guard current != nil else {
+            play([item], startAt: 0, using: store)
+            if current != nil { announce("Playing \(item.name)") }
+            return
+        }
+        var position = index + 1
+        if !playNext {
+            while entries.indices.contains(position), entries[position].isQueued { position += 1 }
+        }
+        entries.insert(QueueEntry(item: item, isQueued: true), at: position)
+        announce(playNext ? "Playing next" : "Added to queue")
+        updateNowPlaying()
+    }
+
+    func removeUpcoming(_ id: UUID) {
+        guard let position = entries.firstIndex(where: { $0.id == id }), position > index else { return }
+        entries.remove(at: position)
+        updateNowPlaying()
+    }
+
+    func moveUpcoming(from source: IndexSet, to destination: Int) {
+        guard current != nil else { return }
+        var tail = Array(entries.dropFirst(index + 1))
+        tail.move(fromOffsets: source, toOffset: destination)
+        entries = Array(entries.prefix(index + 1)) + tail
+    }
+
+    func clearUpcoming() {
+        guard current != nil else { return }
+        entries = Array(entries.prefix(index + 1))
+        updateNowPlaying()
+    }
+
+    func jump(to id: UUID) {
+        guard let position = entries.firstIndex(where: { $0.id == id }), position > index else { return }
+        load(at: position)
+    }
+
+    private func announce(_ message: String) {
+        toast = message
+        toastCount += 1
+        toastTask?.cancel()
+        toastTask = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(2))
+            guard !Task.isCancelled else { return }
+            self?.toast = nil
+        }
+    }
+
+    private func recordRecent(_ album: MediaItem) {
+        var list = recentAlbums.filter { $0.id != album.id }
+        list.insert(album, at: 0)
+        recentAlbums = Array(list.prefix(12))
+        RecentMusicStore.save(recentAlbums)
     }
 
     func resume() { player.play() }
@@ -115,7 +194,7 @@ final class AudioPlayer {
         sleepEndsAt = nil
         player.pause()
         player.replaceCurrentItem(with: nil)
-        queue = []
+        entries = []
         index = 0
         currentTime = 0
         duration = 0
@@ -143,9 +222,9 @@ final class AudioPlayer {
 
     private func load(at newIndex: Int) {
         reportCurrent(.stopped)
-        guard queue.indices.contains(newIndex) else { return }
+        guard entries.indices.contains(newIndex) else { return }
         index = newIndex
-        let item = queue[newIndex]
+        let item = entries[newIndex].item
         var streamURL: URL?
         if let local = item.localFileURL {
             streamURL = local
@@ -244,7 +323,7 @@ final class AudioPlayer {
             MPNowPlayingInfoPropertyDefaultPlaybackRate: Double(rate),
             MPNowPlayingInfoPropertyMediaType: MPNowPlayingInfoMediaType.audio.rawValue,
             MPNowPlayingInfoPropertyPlaybackQueueIndex: index,
-            MPNowPlayingInfoPropertyPlaybackQueueCount: queue.count
+            MPNowPlayingInfoPropertyPlaybackQueueCount: entries.count
         ]
         if let artist = item.subtitle { info[MPMediaItemPropertyArtist] = artist }
         if let artwork { info[MPMediaItemPropertyArtwork] = artwork }

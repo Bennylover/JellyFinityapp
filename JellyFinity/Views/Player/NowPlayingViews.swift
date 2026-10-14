@@ -13,7 +13,36 @@ func formatPlaybackTime(_ seconds: Double) -> String {
 extension View {
     /// Docks the mini player just above the tab bar (and below any pushed screen content).
     func miniPlayerInset() -> some View {
-        safeAreaInset(edge: .bottom, spacing: 0) { MiniPlayerBar() }
+        safeAreaInset(edge: .bottom, spacing: 0) {
+            VStack(spacing: 0) {
+                QueueToast()
+                MiniPlayerBar()
+            }
+        }
+    }
+}
+
+/// Brief confirmation ("Added to queue") that floats just above the mini player.
+private struct QueueToast: View {
+    @Environment(AudioPlayer.self) private var audio
+    @Environment(\.appTheme) private var theme
+
+    var body: some View {
+        ZStack {
+            if let message = audio.toast {
+                Label(message, systemImage: "checkmark.circle.fill")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(theme.accent)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 9)
+                    .background(.regularMaterial, in: Capsule())
+                    .shadow(color: .black.opacity(0.12), radius: 8, y: 3)
+                    .padding(.bottom, 6)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
+        .animation(.spring(response: 0.35, dampingFraction: 0.8), value: audio.toast)
+        .accessibilityElement(children: .combine)
     }
 }
 
@@ -67,6 +96,7 @@ struct NowPlayingView: View {
     @Environment(\.appTheme) private var theme
     @Environment(\.dismiss) private var dismiss
     @State private var scrubValue: Double?
+    @State private var showQueue = false
 
     var body: some View {
         VStack(spacing: 22) {
@@ -158,10 +188,18 @@ struct NowPlayingView: View {
         HStack {
             speedMenu
             Spacer()
+            Button { showQueue = true } label: {
+                Label("Up Next", systemImage: "list.bullet")
+            }
+            .accessibilityLabel("Up Next queue, \(audio.upcoming.count) songs")
+            Spacer()
             sleepMenu
         }
         .font(.subheadline.weight(.semibold))
         .tint(theme.accent)
+        .sheet(isPresented: $showQueue) {
+            QueueView().presentationDetents([.medium, .large])
+        }
     }
 
     private var speedMenu: some View {

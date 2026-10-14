@@ -2,6 +2,7 @@ import SwiftUI
 
 struct HomeView: View {
     @Environment(SessionStore.self) private var session
+    @Environment(AudioPlayer.self) private var audio
     @Environment(\.appTheme) private var theme
     @State private var showSettings = false
 
@@ -67,6 +68,9 @@ struct HomeView: View {
         }
         if !snapshot.recentAlbums.isEmpty {
             AlbumRow(items: snapshot.recentAlbums)
+        }
+        if !audio.recentAlbums.isEmpty {
+            RecentAlbumsRow(albums: audio.recentAlbums)
         }
     }
 }

@@ -142,10 +142,10 @@ struct AlbumTracksSection: View {
         VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: 12) {
                 PrimaryActionButton(title: "Play", symbol: "play.fill") {
-                    audio.play(tracks, startAt: 0, using: store)
+                    audio.play(tracks, startAt: 0, using: store, album: album)
                 }
                 Button {
-                    audio.play(tracks.shuffled(), startAt: 0, using: store)
+                    audio.play(tracks.shuffled(), startAt: 0, using: store, album: album)
                 } label: {
                     Label("Shuffle", systemImage: "shuffle")
                         .font(.headline)
@@ -174,13 +174,22 @@ struct AlbumTracksSection: View {
             VStack(spacing: 0) {
                 ForEach(Array(tracks.enumerated()), id: \.element.id) { offset, track in
                     HStack(spacing: 0) {
-                        Button { audio.play(tracks, startAt: offset, using: store) } label: {
+                        Button { audio.play(tracks, startAt: offset, using: store, album: album) } label: {
                             TrackRow(track: track, number: offset + 1, isCurrent: audio.current?.id == track.id)
                         }
                         .buttonStyle(.plain)
                         .selectionHaptic()
                         DownloadIconButton(item: track, group: album)
                             .padding(.trailing, 14)
+                    }
+                    .swipeToQueue { audio.enqueue(track, using: store) }
+                    .contextMenu {
+                        Button { audio.enqueue(track, playNext: true, using: store) } label: {
+                            Label("Play Next", systemImage: "text.insert")
+                        }
+                        Button { audio.enqueue(track, using: store) } label: {
+                            Label("Add to Queue", systemImage: "text.append")
+                        }
                     }
                     if offset < tracks.count - 1 { Divider() }
                 }

@@ -466,7 +466,7 @@
 				CODE_SIGN_ENTITLEMENTS = JellyFinity/JellyFinity.entitlements;
 				INFOPLIST_FILE = JellyFinity/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.superapp.jellyfinity;
+				PRODUCT_BUNDLE_IDENTIFIER = jellyfinity;
 			};
 			name = Debug;
 		};
@@ -476,7 +476,7 @@
 				CODE_SIGN_ENTITLEMENTS = JellyFinity/JellyFinity.entitlements;
 				INFOPLIST_FILE = JellyFinity/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.superapp.jellyfinity;
+				PRODUCT_BUNDLE_IDENTIFIER = jellyfinity;
 			};
 			name = Release;
 		};

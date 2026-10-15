@@ -28,7 +28,7 @@ targets:
     deploymentTarget: '17.0'
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.superapp.jellyfinity
+        PRODUCT_BUNDLE_IDENTIFIER: jellyfinity
         CODE_SIGN_ENTITLEMENTS: JellyFinity/JellyFinity.entitlements
     sources:
       - path: JellyFinity

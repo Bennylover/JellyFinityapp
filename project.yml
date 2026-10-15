@@ -29,14 +29,9 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: jellyfinity
-        CODE_SIGN_ENTITLEMENTS: JellyFinity/JellyFinity.entitlements
+        "CODE_SIGN_ENTITLEMENTS[sdk=macosx*]": JellyFinity/JellyFinityMac.entitlements
     sources:
       - path: JellyFinity
-    entitlements:
-      path: JellyFinity/JellyFinity.entitlements
-      properties:
-        com.apple.security.app-sandbox: true
-        com.apple.security.network.client: true
     info:
       path: JellyFinity/Info.plist
       properties:

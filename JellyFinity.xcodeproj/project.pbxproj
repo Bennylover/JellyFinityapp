@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 63;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -26,6 +26,7 @@
 		5085B722176A4C09B2B9D884 /* FeaturedCarousel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42E488E763FE959F9EB8F831 /* FeaturedCarousel.swift */; };
 		5422630BEF0B69F8B2FA565F /* CachedImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51891B1B0AD8076EB16C244F /* CachedImage.swift */; };
 		5F97E577B30320DB41FDEE69 /* JellyFinityApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57288B9F8C703027CCE6C764 /* JellyFinityApp.swift */; };
+		68A5DDABB08D0E80FCF59BA2 /* MacWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F15DD476971086A048B2238A /* MacWindow.swift */; };
 		6DCC3463FAEB58B4B4E88FE6 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6EAAC17E5F4FEB720B94E0F /* HomeView.swift */; };
 		75DB2653505E38A890E3D997 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D692FA7F0778DD062237B49 /* KeychainStore.swift */; };
 		89050C155408448C0AD1030C /* NearbyServersSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AAAE79B3590A5DD4E65F35A /* NearbyServersSection.swift */; };
@@ -95,6 +96,7 @@
 		57288B9F8C703027CCE6C764 /* JellyFinityApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JellyFinityApp.swift; sourceTree = "<group>"; };
 		5922CD207A1A8350A2451C0F /* QueueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueView.swift; sourceTree = "<group>"; };
 		5B5692C561AF9CBB633111A5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		6299FE51A283AF61BA4AA73F /* JellyFinity.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = JellyFinity.entitlements; sourceTree = "<group>"; };
 		67C0B10632DCFC6A4D891F1B /* RecentMusicViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentMusicViews.swift; sourceTree = "<group>"; };
 		6CA9FB0876E7F85724832FFB /* SampleData+Library.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SampleData+Library.swift"; sourceTree = "<group>"; };
 		6EC442C459D27446A7B1ABAB /* MetadataCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataCache.swift; sourceTree = "<group>"; };
@@ -104,7 +106,7 @@
 		A06252ADF1B8944F56FF45CE /* ImageStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageStore.swift; sourceTree = "<group>"; };
 		A8EAE93A0824F0C4CB794865 /* VideoPlayerScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayerScreen.swift; sourceTree = "<group>"; };
 		A9E23BEB0A4BD722876BD721 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
-		AB639FC78DEC4096EA8AA40B /* JellyFinity.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JellyFinity.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AB639FC78DEC4096EA8AA40B /* JellyFinity.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = JellyFinity.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ABA11AEF22DFEA84045E5938 /* TMDBClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TMDBClient.swift; sourceTree = "<group>"; };
 		AEF77BB0CB4D50077244392A /* JellyfinClient+Library.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "JellyfinClient+Library.swift"; sourceTree = "<group>"; };
 		AFDB163BC014EFDE9A9CD197 /* ArtistHeroHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistHeroHeader.swift; sourceTree = "<group>"; };
@@ -123,6 +125,7 @@
 		E208F193D7533433E2252AFE /* SwipeToQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeToQueue.swift; sourceTree = "<group>"; };
 		E5DF76CD444D6CF0465BE564 /* HomeCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeCards.swift; sourceTree = "<group>"; };
 		EB7BA10942D686DCEDCD5BC6 /* MediaTrack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTrack.swift; sourceTree = "<group>"; };
+		F15DD476971086A048B2238A /* MacWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacWindow.swift; sourceTree = "<group>"; };
 		FAE4B3AD7FD054E8F581BE9E /* ServerScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerScanner.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -158,6 +161,7 @@
 			children = (
 				5B5692C561AF9CBB633111A5 /* Assets.xcassets */,
 				1F3443309D0922AFFE256627 /* Info.plist */,
+				6299FE51A283AF61BA4AA73F /* JellyFinity.entitlements */,
 				57288B9F8C703027CCE6C764 /* JellyFinityApp.swift */,
 				9A6B2B3A6CFFCD2B075E23FD /* LaunchScreen.storyboard */,
 				C40900AAD28904531999C1F6 /* Models */,
@@ -199,6 +203,7 @@
 			children = (
 				B86B5AF8F32544CD5D0F3F33 /* ArtworkView.swift */,
 				51891B1B0AD8076EB16C244F /* CachedImage.swift */,
+				F15DD476971086A048B2238A /* MacWindow.swift */,
 				E208F193D7533433E2252AFE /* SwipeToQueue.swift */,
 				4C427106690FC9DBB8732ED1 /* TapHaptic.swift */,
 			);
@@ -335,6 +340,7 @@
 			);
 			mainGroup = A4E695101339EFED1DB2F6EB;
 			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -390,6 +396,7 @@
 				75DB2653505E38A890E3D997 /* KeychainStore.swift in Sources */,
 				2B63A030E11E78AA8CAA4179 /* LibraryMixCard.swift in Sources */,
 				D5718E757D1059162866CD19 /* LibraryView.swift in Sources */,
+				68A5DDABB08D0E80FCF59BA2 /* MacWindow.swift in Sources */,
 				47E3A5A52D08F99DB2F9B864 /* MediaDetailSections.swift in Sources */,
 				DF72BF6EAD3ED2D7BE4C7617 /* MediaDetailView.swift in Sources */,
 				4A28FBC6B2E741CC012C713C /* MediaItem.swift in Sources */,
@@ -437,13 +444,14 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 1;
+				DERIVE_MACCATALYST_PRODUCT_BUNDLE_IDENTIFIER = NO;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_NAME = JellyFinity;
 				SDKROOT = iphoneos;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -453,24 +461,25 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 1;
+				DERIVE_MACCATALYST_PRODUCT_BUNDLE_IDENTIFIER = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_NAME = JellyFinity;
 				SDKROOT = iphoneos;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
 		83C775E2A164998794D1DF81 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = JellyFinity/JellyFinity.entitlements;
 				INFOPLIST_FILE = JellyFinity/Info.plist;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.superapp.jellyfinity;
 			};
@@ -479,8 +488,8 @@
 		954C3EE713A8D95BB7519294 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = JellyFinity/JellyFinity.entitlements;
 				INFOPLIST_FILE = JellyFinity/Info.plist;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.superapp.jellyfinity;
 			};

@@ -17,6 +17,14 @@ private struct SwipeToQueue: ViewModifier {
             .background { indicator }
             .clipped()
             .simultaneousGesture(drag)
+            .contextMenu {
+                Button {
+                    fired += 1
+                    onQueue()
+                } label: {
+                    Label("Add to Up Next", systemImage: "text.line.first.and.arrowtriangle.forward")
+                }
+            }
             .sensoryFeedback(.impact(weight: .light), trigger: crossed) { _, now in now }
             .sensoryFeedback(.success, trigger: fired)
     }

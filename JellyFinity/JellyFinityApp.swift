@@ -14,6 +14,7 @@ struct JellyFinityApp: App {
     var body: some Scene {
         WindowGroup {
             RootView()
+                .macWindowMinimumSize()
                 .environment(session)
                 .environment(audio)
                 .environment(downloads)

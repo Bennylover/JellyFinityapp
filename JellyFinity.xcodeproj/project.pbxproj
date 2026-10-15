@@ -122,7 +122,6 @@
 		E208F193D7533433E2252AFE /* SwipeToQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeToQueue.swift; sourceTree = "<group>"; };
 		E5DF76CD444D6CF0465BE564 /* HomeCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeCards.swift; sourceTree = "<group>"; };
 		EB7BA10942D686DCEDCD5BC6 /* MediaTrack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTrack.swift; sourceTree = "<group>"; };
-		EE4C7DFDBB3A7F1FB642CBF4 /* JellyFinityMac.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = JellyFinityMac.entitlements; sourceTree = "<group>"; };
 		F15DD476971086A048B2238A /* MacWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacWindow.swift; sourceTree = "<group>"; };
 		FAE4B3AD7FD054E8F581BE9E /* ServerScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerScanner.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -160,7 +159,6 @@
 				5B5692C561AF9CBB633111A5 /* Assets.xcassets */,
 				1F3443309D0922AFFE256627 /* Info.plist */,
 				57288B9F8C703027CCE6C764 /* JellyFinityApp.swift */,
-				EE4C7DFDBB3A7F1FB642CBF4 /* JellyFinityMac.entitlements */,
 				C40900AAD28904531999C1F6 /* Models */,
 				BF587AA5A229DDEE57971811 /* Playback */,
 				0211513414CAB21D4632CD4F /* Services */,
@@ -429,12 +427,12 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 1;
-				DERIVE_MACCATALYST_PRODUCT_BUNDLE_IDENTIFIER = NO;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_NAME = JellyFinity;
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -446,13 +444,13 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 1;
-				DERIVE_MACCATALYST_PRODUCT_BUNDLE_IDENTIFIER = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_NAME = JellyFinity;
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 6.0;
@@ -463,7 +461,6 @@
 		83C775E2A164998794D1DF81 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				"CODE_SIGN_ENTITLEMENTS[sdk=macosx*]" = JellyFinity/JellyFinityMac.entitlements;
 				INFOPLIST_FILE = JellyFinity/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				PRODUCT_BUNDLE_IDENTIFIER = jellyfinity;
@@ -473,7 +470,6 @@
 		954C3EE713A8D95BB7519294 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				"CODE_SIGN_ENTITLEMENTS[sdk=macosx*]" = JellyFinity/JellyFinityMac.entitlements;
 				INFOPLIST_FILE = JellyFinity/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				PRODUCT_BUNDLE_IDENTIFIER = jellyfinity;

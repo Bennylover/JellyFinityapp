@@ -38,7 +38,7 @@ Prefer native Apple-like UI. Avoid web-dashboard-style components unless explici
 
 - Music queue: `AudioPlayer.entries` ([QueueEntry], `isQueued` = added by hand); `enqueue(_:playNext:using:)`, `upcoming`, `QueueView` sheet from NowPlaying. `.swipeToQueue` modifier on album track rows (+ leading swipe in Downloads). Recently played albums: `RecentMusicStore` (UserDefaults `jl.recentAlbums.v1`), recorded via `audio.play(..., album:)`; shown as `RecentMusicHero` in Music tab and `RecentAlbumsRow` on Home.
 
-- Mac: Mac Catalyst enabled (user asked) — TARGETED_DEVICE_FAMILY '1,2', SUPPORTS_MACCATALYST YES, sandbox + network.client entitlements via project.yml, `.macWindowMinimumSize()` (900×620), right-click "Add to Up Next" inside `SwipeToQueue`. Mac build itself not verified from here (iPhone sim only).
+- Mac: Mac Catalyst was tried and REMOVED (user wants iOS-only): SUPPORTS_MACCATALYST NO, no entitlements file. Leftover `#if targetEnvironment(macCatalyst)` code (`MacWindow.swift`, context menu in `SwipeToQueue`) is inert. Publish error "No Accounts with App Store Connect Access" = needs Admin-role credentials to create a distribution cert (account only had a development cert).
 
 ## Pitfalls
 - Offline: `DownloadManager+Offline` — `LibraryModel.reload` falls back to `offlineLibrary` (albums/shows grouped by groupId) on server error; album tracks/episodes fall back to `offlineChildren`; `localized()` swaps in local files (VideoPlayerScreen does it centrally; audio callers must call it).

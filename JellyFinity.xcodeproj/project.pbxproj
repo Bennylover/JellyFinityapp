@@ -12,7 +12,6 @@
 		08826C9867AF6903E623CC95 /* JellyfinDTOs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2741948E2B24DE74DF41D6B1 /* JellyfinDTOs.swift */; };
 		0A31C71122EB039D89EB8083 /* HomeCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5DF76CD444D6CF0465BE564 /* HomeCards.swift */; };
 		12E56924AA579588BF85ADAF /* VideoPlayerScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8EAE93A0824F0C4CB794865 /* VideoPlayerScreen.swift */; };
-		20AF18493C958EE9D232B0FC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9A6B2B3A6CFFCD2B075E23FD /* LaunchScreen.storyboard */; };
 		22EE31F1CA31287D383B56EE /* SessionStore+Library.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A02271471F036D09F0D24E1 /* SessionStore+Library.swift */; };
 		2B63A030E11E78AA8CAA4179 /* LibraryMixCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E37E6EE645A73CD5719FB43 /* LibraryMixCard.swift */; };
 		30969DB490A4B8A1FEF202A0 /* JellyfinClient+Artists.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FD35112D963B18A42FF918E /* JellyfinClient+Artists.swift */; };
@@ -77,7 +76,6 @@
 		20894D513252AB6086AB69CA /* DownloadRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadRecord.swift; sourceTree = "<group>"; };
 		2741948E2B24DE74DF41D6B1 /* JellyfinDTOs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JellyfinDTOs.swift; sourceTree = "<group>"; };
 		2C77C936B49B63749BC7D810 /* CastSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CastSection.swift; sourceTree = "<group>"; };
-		2D5A311C75090DAE73117ABE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2E37E6EE645A73CD5719FB43 /* LibraryMixCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryMixCard.swift; sourceTree = "<group>"; };
 		350CE045C9C8D696250E3861 /* NowPlayingViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NowPlayingViews.swift; sourceTree = "<group>"; };
 		383E92E52036AA9C456F1DBC /* SampleData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleData.swift; sourceTree = "<group>"; };
@@ -163,7 +161,6 @@
 				1F3443309D0922AFFE256627 /* Info.plist */,
 				6299FE51A283AF61BA4AA73F /* JellyFinity.entitlements */,
 				57288B9F8C703027CCE6C764 /* JellyFinityApp.swift */,
-				9A6B2B3A6CFFCD2B075E23FD /* LaunchScreen.storyboard */,
 				C40900AAD28904531999C1F6 /* Models */,
 				BF587AA5A229DDEE57971811 /* Playback */,
 				0211513414CAB21D4632CD4F /* Services */,
@@ -355,7 +352,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				8BF1D733D7C7BBAC26F07ABA /* Assets.xcassets in Resources */,
-				20AF18493C958EE9D232B0FC /* LaunchScreen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -425,17 +421,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXVariantGroup section */
-		9A6B2B3A6CFFCD2B075E23FD /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				2D5A311C75090DAE73117ABE /* Base */,
-			);
-			name = LaunchScreen.storyboard;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		32166229AD54F856971DEC71 /* Debug */ = {

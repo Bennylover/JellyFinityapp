@@ -29,6 +29,7 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.superapp.jellyfinity
+        CODE_SIGN_ENTITLEMENTS: JellyFinity/JellyFinity.entitlements
     sources:
       - path: JellyFinity
     entitlements:
@@ -53,11 +54,13 @@ targets:
         LSRequiresIPhoneOS: true
         NSAppTransportSecurity:
           NSAllowsLocalNetworking: true
-        NSLocalNetworkUsageDescription: JellyFinity connects to the Jellyfin server on your local network to stream your media.
+        NSLocalNetworkUsageDescription: JellyFinity connects to the Jellyfin server on
+          your local network to stream your media.
         UIApplicationSupportsIndirectInputEvents: true
-        UIBackgroundModes: [audio]
-        UILaunchStoryboardName: LaunchScreen
-        UIRequiredDeviceCapabilities: [arm64]
+        UIBackgroundModes: [ audio ]
+        UILaunchScreen:
+          UIColorName: LaunchBackground
+        UIRequiredDeviceCapabilities: [ arm64 ]
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
           - UIInterfaceOrientationLandscapeLeft
